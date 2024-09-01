@@ -4,11 +4,16 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#6b8afd",
-        secondary: "#2e333d",
-        dark: "#212328",
-        danger: "#eb3330",
-        success: "#4aac68",
+        primary: "var(--color-primary)",
+        background: "var(--color-background)",
+        textPrimary: "var(--color-text-primary)",
+        textSecondary: "var(--color-text-secondary)",
+        buttonBg: "var(--color-button-bg)",
+        buttonText: "var(--color-button-text)",
+        border: "var(--color-border)",
+        cardBg: "var(--color-card-bg)",
+        danger: "#eb3330", // Universal danger color
+        success: "#4aac68", // Universal success color
       },
     },
   },

@@ -6,11 +6,18 @@ import ChatPage from "./pages/chat";
 import { useAuth } from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
+import { useEffect } from "react";
 
 // Main App component
 const App = () => {
   // Extracting 'token' and 'user' from the authentication context
   const { token, user } = useAuth();
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      document.documentElement.classList.add("dark");
+    }
+  }, []);
 
   return (
     <Routes>

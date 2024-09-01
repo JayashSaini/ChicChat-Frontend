@@ -3,6 +3,7 @@ import { useState } from "react";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 // Component for user registration
 const Register = () => {
@@ -31,10 +32,12 @@ const Register = () => {
 
   return (
     // Register form UI
-    <div className="flex justify-center items-center flex-col p-4 sm:h-screen h-[90vh] w-screen">
-      <div className="sm:w-1/2 w-full sm:p-8 p-4 flex justify-center items-center gap-5 flex-col bg-[#353831] shadow-md rounded-2xl my-16 border-secondary border-[1px]">
-        <h1 className="text-2xl m-4 ">Sign up</h1>
-        {/* Input fields for username, password, and email */}
+    <div className="flex justify-center items-center flex-col p-4 sm:h-screen h-[100vh] w-screen bg-background">
+      <div className="sm:max-w-screen-sm w-full p-4 flex justify-center items-center sm:gap-5 gap-4 flex-col shadow-md rounded-2xl border border-border">
+        <h1 className="text-2xl m-4 text-textPrimary font-medium">
+          Sign Up And Get Started
+        </h1>
+        {/* Input fields for email, username, and password */}
         <Input
           placeholder="Enter the email..."
           type="email"
@@ -61,11 +64,11 @@ const Register = () => {
           Sign up
         </Button>
         {/* Login link */}
-        <small className="text-zinc-300">
+        <small className="text-textSecondary">
           Already have an account?{" "}
-          <a className="text-primary hover:underline" href="/login">
+          <Link className="text-primary hover:underline" to="/login">
             Login
-          </a>
+          </Link>
         </small>
       </div>
     </div>

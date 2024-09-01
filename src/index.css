@@ -4,8 +4,33 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Default light theme */
+/* Default light theme */
+:root {
+  --color-primary: #ffc107; /* Amber Yellow */
+  --color-background: #f5f5f5; /* Very Light Gray */
+  --color-text-primary: #333333; /* Dark Charcoal */
+  --color-text-secondary: #666666; /* Gray */
+  --color-button-bg: #ffc107; /* Amber Yellow */
+  --color-button-text: #333333; /* Dark Charcoal */
+  --color-border: #e0e0e0; /* Light Gray */
+  --color-card-bg: #ffffff; /* White */
+}
+
+/* Dark theme */
+.dark {
+  --color-primary: #ffc107; /* Amber Yellow */
+  --color-background: #121212; /* Very Dark Gray */
+  --color-text-primary: #e0e0e0; /* Light Gray */
+  --color-text-secondary: #b3b3b3; /* Medium Gray */
+  --color-button-bg: #ffc107; /* Dark Gray */
+  --color-button-text: #333333; /* Amber Yellow */
+  --color-border: #2c2c2c; /* Darker Gray */
+  --color-card-bg: #1a1a1a; /* Nearly Black */
+}
+
 * {
-  font-family: "Archivo", sans-serif;
+  font-family: "Open Sans", sans-serif;
 }
 
 .truncate-1 {
