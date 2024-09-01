@@ -6,6 +6,8 @@ export default {
       colors: {
         primary: "var(--color-primary)",
         background: "var(--color-background)",
+        backgroundSecondary: "var(--color-background-secondary)",
+        backgroundTertiary: "var(--color-background-tertiary)",
         textPrimary: "var(--color-text-primary)",
         textSecondary: "var(--color-text-secondary)",
         buttonBg: "var(--color-button-bg)",

@@ -1,8 +1,8 @@
 // Importing necessary components and hooks
 import { useState } from "react";
-import Button from "../components/Button";
-import Input from "../components/Input";
-import { useAuth } from "../context/AuthContext";
+import Button from "@components/Button";
+import Input from "@components/Input";
+import { useAuth } from "@context/AuthContext";
 import { Link } from "react-router-dom";
 
 // Component for the Login page

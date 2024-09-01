@@ -3,6 +3,9 @@ import { AxiosResponse } from "axios";
 import { FreeAPISuccessResponseInterface } from "../interfaces/api";
 import { ChatListItemInterface } from "../interfaces/chat";
 import { UserInterface } from "../interfaces/user";
+import { ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+import { jwtDecode } from "jwt-decode";
 
 // A utility function for handling API requests with loading, success, and error handling
 export const requestHandler = async (
@@ -121,6 +124,25 @@ export class LocalStorage {
     localStorage.clear();
   }
 }
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+export const checkTokenExpiry = (token: string | null) => {
+  if (!token) return true; // Consider expired if token is missing
+
+  try {
+    // Ensure the token is decoded and its expiration time is extracted
+    const decodedToken: { exp: number } = jwtDecode(token);
+    const currentTime = Date.now() / 1000;
+
+    // Return true if the token has expired
+    return decodedToken.exp < currentTime;
+  } catch (error) {
+    // If there's an error decoding the token, assume it's expired
+    return true;
+  }
+};
 
 // Theme Handler
 // // Handle theme change
