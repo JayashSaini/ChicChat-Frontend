@@ -10,8 +10,12 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import { cn, LocalStorage, checkTokenExpiry } from "@utils/index";
 import logoIcon from "@assets/logoicon.svg";
 import logo from "@assets/logo.svg";
+import logoDark from "@assets/logodark.svg";
 import { useAuth } from "@context/AuthContext";
 import Avatar from "@mui/material/Avatar";
+import WbSunnyIcon from "@mui/icons-material/WbSunny";
+import NightsStayIcon from "@mui/icons-material/NightsStay";
+import { useSidebar } from "@context/SliderContext";
 
 export const getLinks = (logout: any) => [
   {
@@ -58,6 +62,7 @@ function Layout() {
   const links = getLinks(logout);
 
   const [open, setOpen] = useState(false);
+  const { theme, toggleTheme } = useSidebar();
 
   return (
     <div
@@ -68,25 +73,45 @@ function Layout() {
       <Sidebar open={open} setOpen={setOpen}>
         <SidebarBody className="justify-between gap-10 bg-backgroundTertiary">
           <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-            <div className="flex flex-col gap-2 justify-center w-full">
+            <div className="flex flex-col gap-2  w-full">
               {links.map((link, idx) => (
                 <SidebarLink key={idx} link={link} />
               ))}
             </div>
           </div>
-          <SidebarLink
-            link={{
-              label: "Profile",
-              href: "/chat/profile",
-              icon: (
-                <Avatar
-                  src="https://res.cloudinary.com/dcvb5vgyf/image/upload/c_scale,h_500,w_500/oysy3d5lzxjzjp8am3bi.jpg" // Placeholder image
-                  className="h-8 w-8 flex-shrink-0 rounded-full"
-                  alt="Avatar"
-                />
-              ),
-            }}
-          />
+          <div className="m-auto">
+            <SidebarLink
+              link={{
+                label: "theme",
+                href: "#",
+                icon: (
+                  <div className="bg-backgroundSecondary p-2 rounded-full">
+                    {theme === "light" ? (
+                      <NightsStayIcon className="text-blue-500" />
+                    ) : (
+                      <WbSunnyIcon className="text-primary" />
+                    )}
+                  </div>
+                ),
+                onClick: () => {
+                  toggleTheme();
+                },
+              }}
+            />
+            <SidebarLink
+              link={{
+                label: "Profile",
+                href: "/chat/profile",
+                icon: (
+                  <Avatar
+                    src="https://res.cloudinary.com/dcvb5vgyf/image/upload/c_scale,h_500,w_500/oysy3d5lzxjzjp8am3bi.jpg" // Placeholder image
+                    className="h-8 w-8 flex-shrink-0 rounded-full"
+                    alt="Avatar"
+                  />
+                ),
+              }}
+            />
+          </div>
         </SidebarBody>
       </Sidebar>
       <div className="w-full h-screen overflow-x-hidden">
@@ -109,13 +134,19 @@ export const LogoIcon = () => {
   );
 };
 
-export const Logo = () => {
+export const Logo: React.FC<{
+  theme: "dark" | "light";
+}> = ({ theme }) => {
   return (
     <Link
       to="/chat"
       className="font-normal flex space-x-2 items-center py-1 relative z-20"
     >
-      <img src={logo} alt="Logo" className="sm:w-[110px] w-[120px]" />
+      <img
+        src={theme == "light" ? logoDark : logo}
+        alt="Logo"
+        className="sm:w-[110px] w-[120px]"
+      />
     </Link>
   );
 };

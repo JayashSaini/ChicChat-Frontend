@@ -76,6 +76,8 @@ export const MobileSidebar = ({
   const { logout } = useAuth();
   const links = getLinks(logout);
 
+  const { theme } = useSidebar();
+
   return (
     <>
       <div
@@ -115,7 +117,7 @@ export const MobileSidebar = ({
               >
                 <IconX />
               </div>
-              <Logo />
+              <Logo theme={theme} />
               <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
                 <div className="flex flex-col gap-2">
                   {links.map((link, idx) => (
@@ -170,28 +172,24 @@ export const SidebarLink = ({
 }) => {
   const { open, setOpen } = useSidebar();
   return link?.onClick ? (
-    <ToolTip title={link.label}>
-      <div
-        className=" flex items-center text-textPrimary justify-start gap-2  group/sidebar py-2 cursor-pointer"
-        onClick={link.onClick}
-      >
-        {link.icon}
-      </div>
-    </ToolTip>
+    <div
+      className="m-auto flex items-center text-textPrimary justify-start gap-2  group/sidebar py-2 cursor-pointer"
+      onClick={link.onClick}
+    >
+      <ToolTip title={link.label}>{link.icon}</ToolTip>
+    </div>
   ) : (
-    <ToolTip title={link.label}>
-      <NavLink
-        to={link.href}
-        className={
-          "flex items-center text-textPrimary justify-start  group/sidebar py-2"
-        }
-        {...props}
-        onClick={() => {
-          if (open) setOpen(false);
-        }}
-      >
-        {link.icon}
-      </NavLink>
-    </ToolTip>
+    <NavLink
+      to={link.href}
+      className={
+        "m-auto flex items-center text-textPrimary justify-start  group/sidebar py-2"
+      }
+      {...props}
+      onClick={() => {
+        if (open) setOpen(false);
+      }}
+    >
+      <ToolTip title={link.label}>{link.icon}</ToolTip>
+    </NavLink>
   );
 };

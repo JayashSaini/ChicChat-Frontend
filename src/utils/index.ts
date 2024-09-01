@@ -143,18 +143,3 @@ export const checkTokenExpiry = (token: string | null) => {
     return true;
   }
 };
-
-// Theme Handler
-// // Handle theme change
-// const toggleTheme = () => {
-//   const newTheme = theme === "light" ? "dark" : "light";
-//   setTheme(newTheme);
-//   document.documentElement.classList.toggle("dark", newTheme === "dark");
-// };
-
-// // Set the theme on initial load
-// useEffect(() => {
-//   if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-//     setTheme("dark");
-//   }
-// }, []);
