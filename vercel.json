@@ -4,7 +4,7 @@
     { "source": "/login", "destination": "/index.html" },
     { "source": "/register", "destination": "/index.html" },
     {
-      "source": "/chat",
+      "source": "/workspace/(.*)",
       "destination": "/index.html"
     },
     {

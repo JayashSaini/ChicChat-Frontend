@@ -9,8 +9,13 @@ dns.setDefaultResultOrder("verbatim");
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: "localhost",
-    port: 3000,
+    proxy: {
+      "/api": {
+        target: process.env.VITE_SERVER_URI,
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
   resolve: {
     alias: {
