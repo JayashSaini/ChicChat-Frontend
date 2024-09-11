@@ -10,6 +10,7 @@ import { ChatListItemInterface, ChatMessageInterface } from "@interfaces/chat";
 import { getChatMessages, getUserChats } from "@api/index";
 import { toast } from "sonner";
 import { useSocket } from "./SocketContext";
+import { useAuth } from "./AuthContext";
 
 // Sockets Events
 const CONNECTED_EVENT = "connected";
@@ -90,6 +91,7 @@ const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
   const [message, setMessage] = useState(""); // To store the currently typed message
 
   const { socket } = useSocket();
+  const { user } = useAuth();
 
   const setChatsHandler = (chats: ChatListItemInterface[]) => {
     setChats(chats);
@@ -292,6 +294,7 @@ const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Check for saved user and token in local storage during component initialization
   useEffect(() => {
+    console.log("user is : ", user);
     // Fetch the chat list from the server.
     getChats();
 

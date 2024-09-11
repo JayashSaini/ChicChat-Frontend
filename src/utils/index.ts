@@ -25,10 +25,11 @@ export const requestHandler = async (
       onSuccess(data);
     }
   } catch (error: any) {
+    console.log("response is : ", error);
     // Handle error cases, including unauthorized and forbidden cases
     if ([401, 403].includes(error?.response.data?.statusCode)) {
-      localStorage.clear(); // Clear local storage on authentication issues
-      if (isBrowser) window.location.href = "/login"; // Redirect to login page
+      // localStorage.clear(); // Clear local storage on authentication issues
+      // if (isBrowser) window.location.href = "/login"; // Redirect to login page
     }
     onError(error?.response?.data?.message || "Something went wrong");
   } finally {
