@@ -6,6 +6,7 @@ interface SidebarContextProps {
   animate: boolean;
   theme: "dark" | "light";
   toggleTheme: () => void;
+  isMobileScreen: boolean; // New property
 }
 
 const SidebarContext = createContext<SidebarContextProps | undefined>(
@@ -34,29 +35,59 @@ export const SidebarProvider = ({
   initialTheme?: "dark" | "light";
 }) => {
   const [openState, setOpenState] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">(initialTheme);
+  const [isMobileScreen, setIsMobileScreen] = useState(
+    window.matchMedia("(max-width: 768px)").matches
+  );
 
   const open = openProp !== undefined ? openProp : openState;
   const setOpen = setOpenProp !== undefined ? setOpenProp : setOpenState;
-  const [theme, setTheme] = useState<"dark" | "light">(initialTheme);
+
+  // Handle screen size changes
+  const handleResize = () => {
+    setIsMobileScreen(window.matchMedia("(max-width: 768px)").matches);
+  };
+
+  useEffect(() => {
+    // Add event listener for screen size changes
+    window.addEventListener("resize", handleResize);
+
+    // Cleanup event listener on unmount
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   // Theme Handler
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
-    document.documentElement.classList.toggle("dark", newTheme === "dark");
+    localStorage.setItem("theme", newTheme);
+    document.documentElement.className = newTheme;
   };
 
-  // Set the theme on initial load based on system preference
   useEffect(() => {
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      setTheme("dark");
-      document.documentElement.classList.add("dark");
+    // Load theme from localStorage or system preference
+    const savedTheme: any = localStorage.getItem("theme") || "system";
+    if (savedTheme === "system") {
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+
+      const newTheme = prefersDark ? "dark" : "light";
+      setTheme(newTheme);
+      document.documentElement.className = newTheme;
+      localStorage.setItem("theme", newTheme);
+    } else {
+      setTheme(savedTheme);
+      document.documentElement.className = savedTheme;
+      localStorage.setItem("theme", savedTheme);
     }
   }, []);
 
   return (
     <SidebarContext.Provider
-      value={{ open, setOpen, animate, theme, toggleTheme }}
+      value={{ open, setOpen, animate, theme, toggleTheme, isMobileScreen }}
     >
       {children}
     </SidebarContext.Provider>

@@ -61,7 +61,6 @@ const AddChatModal: React.FC<{
       (res) => {
         const { data } = res; // Extract data from response
         // If chat already exists with the selected user
-        console.log("response is : ", res);
         if (res.statusCode === 200) {
           alert("Chat with selected user already exists");
           return;
@@ -141,7 +140,7 @@ const AddChatModal: React.FC<{
         </Transition.Child>
 
         <div className="fixed inset-0 z-10 overflow-y-visible">
-          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          <div className="flex min-h-full justify-center p-4 text-center items-center sm:p-0">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -152,7 +151,7 @@ const AddChatModal: React.FC<{
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <Dialog.Panel
-                className="relative transform overflow-x-hidden rounded-lg bg-[#353831] px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-3xl sm:p-6"
+                className="relative transform overflow-x-hidden rounded-lg bg-backgroundSecondary px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-3xl w-full sm:p-6"
                 style={{
                   overflow: "inherit",
                 }}
@@ -161,13 +160,13 @@ const AddChatModal: React.FC<{
                   <div className="flex justify-between items-center">
                     <Dialog.Title
                       as="h3"
-                      className="text-lg font-semibold leading-6 text-white"
+                      className="text-lg font-semibold leading-6 text-textPrimary"
                     >
                       Create chat
                     </Dialog.Title>
                     <button
                       type="button"
-                      className="rounded-md bg-transparent text-zinc-400 hover:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-white focus:ring-offset-2"
+                      className="rounded-md bg-transparent text-textPrimary"
                       onClick={() => handleClose()}
                     >
                       <span className="sr-only">Close</span>
@@ -181,16 +180,18 @@ const AddChatModal: React.FC<{
                       checked={isGroupChat}
                       onChange={setIsGroupChat}
                       className={classNames(
-                        isGroupChat ? "bg-[#3f4238]" : "bg-zinc-200",
-                        "relative outline outline-[1px] outline-white inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:ring-0"
+                        isGroupChat
+                          ? "bg-backgroundSecondary"
+                          : "bg-backgroundTertiary",
+                        "relative outline outline-[1px] outline-neutral-500 inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:ring-0"
                       )}
                     >
                       <span
                         aria-hidden="true"
                         className={classNames(
                           isGroupChat
-                            ? "translate-x-5 bg-success"
-                            : "translate-x-0 bg-white",
+                            ? "translate-x-5 bg-primary"
+                            : "translate-x-0 bg-textSecondary",
                           "pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out"
                         )}
                       />
@@ -198,7 +199,7 @@ const AddChatModal: React.FC<{
                     <Switch.Label as="span" className="ml-3 text-sm">
                       <span
                         className={classNames(
-                          "font-medium text-white",
+                          "font-medium text-textPrimary",
                           isGroupChat ? "" : "opacity-40"
                         )}
                       >
@@ -246,7 +247,7 @@ const AddChatModal: React.FC<{
                     <div className="my-5">
                       <span
                         className={classNames(
-                          "font-medium text-white inline-flex items-center"
+                          "font-medium text-textPrimary inline-flex items-center"
                         )}
                       >
                         <UserGroupIcon className="h-5 w-5 mr-2" /> Selected
@@ -260,19 +261,19 @@ const AddChatModal: React.FC<{
                           ?.map((participant) => {
                             return (
                               <div
-                                className="inline-flex bg-[#3f4238] rounded-full p-2 border-[1px] border-zinc-400 items-center gap-2"
+                                className="inline-flex bg-primary rounded-full p-2 items-center gap-2"
                                 key={participant._id}
                               >
                                 <img
                                   className="h-6 w-6 rounded-full object-cover"
                                   src={participant.avatar.url}
                                 />
-                                <p className="text-white">
+                                <p className="text-[#121212]">
                                   {participant.username}
                                 </p>
                                 <XCircleIcon
                                   role="button"
-                                  className="w-6 h-6 hover:text-primary cursor-pointer"
+                                  className="w-6 h-6 dark:text-neutral-900 text-neutral-100 cursor-pointer"
                                   onClick={() => {
                                     setGroupParticipants(
                                       groupParticipants.filter(

@@ -11,6 +11,8 @@ import { useAuth } from "../../context/AuthContext";
 import { ChatListItemInterface } from "../../interfaces/chat";
 import { classNames, getChatObjectMetadata, requestHandler } from "../../utils";
 import GroupChatDetailsModal from "./GroupChatDetailsModal";
+import { useSidebar } from "@context/SliderContext";
+import { useNavigate } from "react-router-dom";
 
 const ChatItem: React.FC<{
   chat: ChatListItemInterface;
@@ -20,8 +22,11 @@ const ChatItem: React.FC<{
   onChatDelete: (chatId: string) => void;
 }> = ({ chat, onClick, isActive, unreadCount = 0, onChatDelete }) => {
   const { user } = useAuth();
+  const { isMobileScreen } = useSidebar();
+
   const [openOptions, setOpenOptions] = useState(false);
   const [openGroupInfo, setOpenGroupInfo] = useState(false);
+  const navigate = useNavigate();
 
   // Define an asynchronous function named 'deleteChat'.
   const deleteChat = async () => {
@@ -40,6 +45,7 @@ const ChatItem: React.FC<{
   };
 
   if (!chat) return;
+
   return (
     <div>
       <GroupChatDetailsModal
@@ -52,14 +58,24 @@ const ChatItem: React.FC<{
       />
       <div
         role="button"
-        onClick={() => onClick(chat)}
+        onClick={() => {
+          onClick(chat);
+          if (isMobileScreen) {
+            navigate("/workspace/chat/messages");
+          }
+        }}
         onMouseLeave={() => setOpenOptions(false)}
         className={classNames(
-          "group p-4 my-2 flex justify-between gap-3 items-start cursor-pointer rounded-3xl hover:bg-[#3f4238]",
-          isActive ? "border-[1px] border-zinc-500 bg-[#3f4238]" : "",
+          "group p-4 my-2 flex select-none justify-between gap-3 items-start cursor-pointer rounded-md hover:bg-backgroundSecondary bg-backgroundTertiary",
+
+          // Handle the border logic
           unreadCount > 0
-            ? "border-[1px] border-success bg-success/20 font-bold"
-            : ""
+            ? "border-yellow-500 bg-yellow-500/20 font-bold hover:bg-yellow-600/20" // If unreadCount > 0, prioritize this
+            : isActive
+            ? "dark:border-zinc-100 border-zinc-400  bg-backgroundTertiary" // If isActive is true and unreadCount is 0
+            : "dark:border-zinc-600 border-zinc-300", // Default case when neither isActive nor unreadCount > 0
+
+          "border-[1px]" // Ensure border width is always applied
         )}
       >
         <button
@@ -69,10 +85,16 @@ const ChatItem: React.FC<{
           }}
           className="self-center p-1 relative"
         >
-          <EllipsisVerticalIcon className="h-6 group-hover:w-6 group-hover:opacity-100 w-0 opacity-0 transition-all ease-in-out duration-100 text-zinc-300" />
+          <EllipsisVerticalIcon
+            className={`${
+              isMobileScreen
+                ? "w-6"
+                : "w-0 opacity-0 group-hover:w-6 group-hover:opacity-100"
+            } h-6 transition-all ease-in-out duration-100 text-textPrimary`}
+          />
           <div
             className={classNames(
-              "z-20 text-left absolute bottom-0 translate-y-full text-sm w-52 bg-[#353831] rounded-2xl p-2 shadow-md border-[1px] border-secondary",
+              "z-20 text-left absolute bottom-0 translate-y-full text-sm w-52 bg-backgroundTertiary  border-[1px] border-border rounded-lg shadow-xl",
               openOptions ? "block" : "hidden"
             )}
           >
@@ -83,9 +105,9 @@ const ChatItem: React.FC<{
                   setOpenGroupInfo(true);
                 }}
                 role="button"
-                className="p-4 w-full rounded-lg inline-flex items-center hover:bg-[#3f4238]"
+                className="p-4 w-full rounded-lg inline-flex items-center text-textPrimary "
               >
-                <InformationCircleIcon className="h-4 w-4 mr-2" /> About group
+                <InformationCircleIcon className="h-4 w-4 mr-2 " /> About group
               </p>
             ) : (
               <p
@@ -99,7 +121,7 @@ const ChatItem: React.FC<{
                   }
                 }}
                 role="button"
-                className="p-4 text-danger rounded-lg w-full inline-flex items-center hover:bg-[#3f4238]"
+                className="p-4 text-danger w-full inline-flex items-center"
               >
                 <TrashIcon className="h-4 w-4 mr-2" />
                 Delete chat
@@ -137,27 +159,27 @@ const ChatItem: React.FC<{
           )}
         </div>
         <div className="w-full">
-          <p className="truncate-1">
+          <p className="truncate-1 text-textPrimary">
             {getChatObjectMetadata(chat, user!).title}
           </p>
           <div className="w-full inline-flex items-center text-left">
             {chat.lastMessage && chat.lastMessage.attachments.length > 0 ? (
               // If last message is an attachment show paperclip
-              <PaperClipIcon className="text-white/50 h-3 w-3 mr-2 flex flex-shrink-0" />
+              <PaperClipIcon className="text-textSecondary h-3 w-3 mr-2 flex flex-shrink-0" />
             ) : null}
-            <small className="text-white/50 truncate-1 text-sm text-ellipsis inline-flex items-center">
+            <small className="text-textSecondary truncate-1 text-sm text-ellipsis inline-flex items-center">
               {getChatObjectMetadata(chat, user!).lastMessage}
             </small>
           </div>
         </div>
-        <div className="flex text-white/50 h-full text-sm flex-col justify-between items-end">
+        <div className="flex text-textSecondary h-full text-sm flex-col justify-between items-end">
           <small className="mb-2 inline-flex flex-shrink-0 w-max">
             {moment(chat.updatedAt).add("TIME_ZONE", "hours").fromNow(true)}
           </small>
 
           {/* Unread count will be > 0 when user is on another chat and there is new message in a chat which is not currently active on user's screen */}
           {unreadCount <= 0 ? null : (
-            <span className="bg-success h-2 w-2 aspect-square flex-shrink-0 p-2 text-white text-xs rounded-full inline-flex justify-center items-center">
+            <span className="bg-success h-2 w-2 aspect-square flex-shrink-0 p-2 text-textPrimary text-xs rounded-full inline-flex justify-center items-center">
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           )}

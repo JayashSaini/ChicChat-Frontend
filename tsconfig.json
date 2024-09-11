@@ -8,7 +8,9 @@
       "@interfaces/*": ["interfaces/*"],
       "@pages/*": ["pages/*"],
       "@utils/*": ["utils/*"],
-      "@assets/*": ["assets/*"]
+      "@assets/*": ["assets/*"],
+      "@layout/*": ["layout/*"],
+      "@routes/*": ["routes/*"]
     },
     "target": "ES2020",
     "useDefineForClassFields": true,

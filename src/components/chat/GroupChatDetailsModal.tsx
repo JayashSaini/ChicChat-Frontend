@@ -22,6 +22,7 @@ import { requestHandler } from "../../utils";
 import Button from "../Button";
 import Input from "../Input";
 import Select from "../Select";
+import { toast } from "sonner";
 
 const GroupChatDetailsModal: React.FC<{
   open: boolean;
@@ -29,6 +30,10 @@ const GroupChatDetailsModal: React.FC<{
   chatId: string;
   onGroupDelete: (chatId: string) => void;
 }> = ({ open, onClose, chatId, onGroupDelete }) => {
+  const [isGroupDeleteLoader, setIsGroupDeleteLoader] = useState(false);
+  const [isAddParticipantLoader, setIsAddParticipantLoader] = useState(false);
+  const [isGroupNameLoader, setIsGroupNameLoader] = useState(false);
+
   const { user } = useAuth();
   // State to manage the UI flag for adding a participant
   const [addingParticipant, setAddingParticipant] = useState(false);
@@ -56,16 +61,16 @@ const GroupChatDetailsModal: React.FC<{
     requestHandler(
       // Call to update the group name with the provided chatId and newGroupName.
       async () => await updateGroupName(chatId, newGroupName),
-      null,
+      setIsGroupNameLoader,
       // On successful update, set the new group details and other related states.
       (res) => {
         const { data } = res;
         setGroupDetails(data); // Set the new group details.
         setNewGroupName(data.name); // Set the new group name state.
         setRenamingGroup(false); // Set the state to not renaming.
-        alert("Group name updated to " + data.name); // Alert the user about the update.
+        toast.success("Group name updated to " + data.name); // Alert the user about the update.
       },
-      alert // Use default alert for any error messages.
+      (e) => toast.error(e) // Use default alert for any error messages.
     );
   };
 
@@ -88,20 +93,21 @@ const GroupChatDetailsModal: React.FC<{
   const deleteGroupChat = async () => {
     // Check if the user is the admin of the group before deletion.
     if (groupDetails?.admin !== user?._id) {
-      return alert("You are not the admin of the group");
+      return toast.error("You are not the admin of the group");
     }
 
     // Request to delete the group chat.
     requestHandler(
       // Call to delete the group using the provided chatId.
       async () => await deleteGroup(chatId),
-      null,
+      setIsGroupDeleteLoader,
       // On successful deletion, trigger onGroupDelete and close any modals/dialogs.
       () => {
         onGroupDelete(chatId);
         handleClose();
+        toast.success("Group deleted successfully!");
       },
-      alert // Use default alert for any error messages.
+      (e) => toast.error(e) // Use default alert for any error messages.
     );
   };
 
@@ -127,10 +133,10 @@ const GroupChatDetailsModal: React.FC<{
         // Update the state with the modified group details.
         setGroupDetails(updatedGroupDetails as ChatListItemInterface);
         // Inform the user that the participant has been removed.
-        alert("Participant removed");
+        toast.info("Participant removed");
       },
       // This may be a generic error alert or error handling function if the request fails.
-      alert
+      (e) => toast.error(e)
     );
   };
 
@@ -144,7 +150,7 @@ const GroupChatDetailsModal: React.FC<{
       // Actual request to add the participant.
       async () => await addParticipantToGroup(chatId, participantToBeAdded),
       // No loading callback provided, so passing `null`.
-      null,
+      setIsAddParticipantLoader,
       // Callback on success.
       (res) => {
         // Destructure the response to get the data.
@@ -157,10 +163,10 @@ const GroupChatDetailsModal: React.FC<{
         // Update the group details state with the new details.
         setGroupDetails(updatedGroupDetails as ChatListItemInterface);
         // Alert the user that the participant was added.
-        alert("Participant added");
+        toast.info("Participant added");
       },
       // Use the `alert` function as the fallback error handler.
-      alert
+      (e) => toast.error(e)
     );
   };
 
@@ -224,13 +230,13 @@ const GroupChatDetailsModal: React.FC<{
                 leaveTo="translate-x-full"
               >
                 <Dialog.Panel className="pointer-events-auto w-screen max-w-2xl">
-                  <div className="flex h-full flex-col overflow-y-scroll bg-[#3f4238] py-6 shadow-xl">
+                  <div className="flex h-full flex-col overflow-y-scroll bg-backgroundSecondary py-6 shadow-xl">
                     <div className="px-4 sm:px-6">
                       <div className="flex items-start justify-between">
-                        <div className="ml-3 flex h-7 items-center">
+                        <div className="flex h-7 items-center">
                           <button
                             type="button"
-                            className="relative rounded-md bg-[#3f4238] text-zinc-400 hover:text-zinc-500 focus:outline-none"
+                            className="relative rounded-md bg-backgroundTertiary text-textSecondary hover:text-zinc-500 focus:outline-none"
                             onClick={handleClose}
                           >
                             <span className="absolute -inset-2.5" />
@@ -242,11 +248,11 @@ const GroupChatDetailsModal: React.FC<{
                     </div>
                     <div className="relative mt-6 flex-1 px-4 sm:px-6">
                       <div className="flex flex-col justify-center items-start">
-                        <div className="flex pl-16 justify-center items-center relative w-full h-max gap-3">
+                        <div className="flex md:pl-16 pl-12 justify-center items-center relative w-full h-max gap-3">
                           {groupDetails?.participants.slice(0, 3).map((p) => {
                             return (
                               <img
-                                className="w-24 h-24 -ml-16 rounded-full outline outline-4 outline-secondary"
+                                className="md:w-24 md:h-24 w-16 h-16 -ml-14 rounded-full outline outline-4 outline-secondary"
                                 key={p._id}
                                 src={p.avatar.url}
                                 alt="avatar"
@@ -260,7 +266,7 @@ const GroupChatDetailsModal: React.FC<{
                         </div>
                         <div className="w-full flex flex-col justify-center items-center text-center">
                           {renamingGroup ? (
-                            <div className="w-full flex justify-center items-center mt-5 gap-2">
+                            <div className="w-full mt-5 space-y-4">
                               <Input
                                 placeholder="Enter new group name..."
                                 value={newGroupName}
@@ -268,22 +274,27 @@ const GroupChatDetailsModal: React.FC<{
                                   setNewGroupName(e.target.value)
                                 }
                               />
-                              <Button
-                                severity="primary"
-                                onClick={handleGroupNameUpdate}
-                              >
-                                Save
-                              </Button>
-                              <Button
-                                severity="secondary"
-                                onClick={() => setRenamingGroup(false)}
-                              >
-                                Cancel
-                              </Button>
+                              <div className="flex justify-center items-center gap-2">
+                                <Button
+                                  severity="primary"
+                                  onClick={handleGroupNameUpdate}
+                                  fullWidth={true}
+                                  isLoading={isGroupNameLoader}
+                                >
+                                  Save
+                                </Button>
+                                <Button
+                                  severity="secondary"
+                                  onClick={() => setRenamingGroup(false)}
+                                  fullWidth={true}
+                                >
+                                  Cancel
+                                </Button>
+                              </div>
                             </div>
                           ) : (
-                            <div className="w-full inline-flex justify-center items-center text-center mt-5">
-                              <h1 className="text-2xl font-semibold truncate-1">
+                            <div className="w-full inline-flex justify-center items-center text-center mt-5 text-textPrimary">
+                              <h1 className="md:text-2xl text-xl font-semibold truncate-1">
                                 {groupDetails?.name}
                               </h1>
                               {groupDetails?.admin === user?._id ? (
@@ -294,14 +305,14 @@ const GroupChatDetailsModal: React.FC<{
                             </div>
                           )}
 
-                          <p className="mt-2 text-zinc-400 text-sm">
+                          <p className="mt-2 text-textSecondary text-sm">
                             Group · {groupDetails?.participants.length}{" "}
                             participants
                           </p>
                         </div>
                         <hr className="border-[0.1px] border-zinc-600 my-5 w-full" />
                         <div className="w-full">
-                          <p className="inline-flex items-center">
+                          <p className="inline-flex items-center text-textPrimary">
                             <UserGroupIcon className="h-6 w-6 mr-2" />{" "}
                             {groupDetails?.participants.length} Participants
                           </p>
@@ -316,7 +327,7 @@ const GroupChatDetailsModal: React.FC<{
                                         src={part.avatar.url}
                                       />
                                       <div>
-                                        <p className="text-white font-semibold text-sm inline-flex items-center w-full">
+                                        <p className="text-textPrimary font-semibold text-sm inline-flex items-center w-full">
                                           {part.username}{" "}
                                           {part._id === groupDetails.admin ? (
                                             <span className="ml-2 text-[10px] px-4 bg-success/10 border-[0.1px] border-success rounded-full text-success">
@@ -324,7 +335,7 @@ const GroupChatDetailsModal: React.FC<{
                                             </span>
                                           ) : null}
                                         </p>
-                                        <small className="text-zinc-400">
+                                        <small className="text-textSecondary">
                                           {part.email}
                                         </small>
                                       </div>
@@ -366,7 +377,7 @@ const GroupChatDetailsModal: React.FC<{
                                     Add participant
                                   </Button>
                                 ) : (
-                                  <div className="w-full flex justify-start items-center gap-2">
+                                  <div className="w-full space-y-5">
                                     <Select
                                       placeholder="Select a user to add..."
                                       value={participantToBeAdded}
@@ -378,18 +389,25 @@ const GroupChatDetailsModal: React.FC<{
                                         setParticipantToBeAdded(value);
                                       }}
                                     />
-                                    <Button onClick={() => addParticipant()}>
-                                      + Add
-                                    </Button>
-                                    <Button
-                                      severity="secondary"
-                                      onClick={() => {
-                                        setAddingParticipant(false);
-                                        setParticipantToBeAdded("");
-                                      }}
-                                    >
-                                      Cancel
-                                    </Button>
+                                    <div className="flex  items-center gap-2">
+                                      <Button
+                                        onClick={() => addParticipant()}
+                                        fullWidth
+                                        isLoading={isAddParticipantLoader}
+                                      >
+                                        + Add
+                                      </Button>
+                                      <Button
+                                        severity="secondary"
+                                        onClick={() => {
+                                          setAddingParticipant(false);
+                                          setParticipantToBeAdded("");
+                                        }}
+                                        fullWidth
+                                      >
+                                        Cancel
+                                      </Button>
+                                    </div>
                                   </div>
                                 )}
                                 <Button
@@ -403,6 +421,7 @@ const GroupChatDetailsModal: React.FC<{
                                       deleteGroupChat();
                                     }
                                   }}
+                                  isLoading={isGroupDeleteLoader}
                                 >
                                   <TrashIcon className="w-5 h-5 mr-1" /> Delete
                                   group

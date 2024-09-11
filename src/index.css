@@ -1,5 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
+* {
+  font-family: "Open Sans", sans-serif;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -11,30 +18,26 @@
   --color-background: #f5f5f5; /* Very Light Gray (Main Background) */
   --color-background-secondary: #e0e0e0; /* Light Gray (Secondary Background) */
   --color-background-tertiary: #d0d0d0; /* Slightly Darker Gray (Tertiary Background) */
-  --color-text-primary: #333333; /* Dark Charcoal */
+  --color-text-primary: #303030; /* Dark Charcoal */
   --color-text-secondary: #666666; /* Gray */
   --color-button-bg: #ffc107; /* Amber Yellow */
   --color-button-text: #333333; /* Dark Charcoal */
-  --color-border: #e0e0e0; /* Light Gray */
+  --color-border: #a1a1aa; /* Light Gray */
   --color-card-bg: #ffffff; /* White */
 }
 
 /* Dark theme */
 .dark {
   --color-primary: #ffc107; /* Amber Yellow */
-  --color-background: #121212; /* Very Dark Gray (Main Background) */
+  --color-background: #262626; /* Very Dark Gray (Main Background) */
   --color-background-secondary: #1e1e1e; /* Darker Gray (Secondary Background) */
   --color-background-tertiary: #2c2c2c; /* Even Darker Gray (Tertiary Background) */
-  --color-text-primary: #e0e0e0; /* Light Gray */
+  --color-text-primary: #f0f0f0; /* Light Gray */
   --color-text-secondary: #b3b3b3; /* Medium Gray */
   --color-button-bg: #ffc107; /* Amber Yellow */
   --color-button-text: #333333; /* Dark Charcoal */
   --color-border: #2c2c2c; /* Darker Gray */
   --color-card-bg: #1a1a1a; /* Nearly Black */
-}
-
-* {
-  font-family: "Open Sans", sans-serif;
 }
 
 .truncate-1 {
@@ -71,4 +74,23 @@
 .animation3 {
   animation: bounce 0.4s ease-in-out infinite alternate;
   animation-delay: 0s;
+}
+
+/* For modern browsers */
+.custom-scrollbar {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: var(--color-text-secondary) rgba(0, 0, 0, 0.1); /* Firefox */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px; /* Adjust this for width */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--color-text-secondary); /* Background of the scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--color-text-secondary); /* Thumb color */
+  border-radius: 10px; /* Rounded edges */
 }

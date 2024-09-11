@@ -49,7 +49,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setToken(data.accessToken);
         LocalStorage.set("user", data.user);
         LocalStorage.set("token", data.accessToken);
-        navigate("/chat"); // Redirect to the chat page after successful login
+        navigate("/workspace/chat"); // Redirect to the chat page after successful login
       },
       (message) => toast.error(message) // Display error alerts on request failure
     );

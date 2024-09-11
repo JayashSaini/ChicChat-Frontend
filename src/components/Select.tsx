@@ -29,7 +29,7 @@ const Select: React.FC<{
         <Combobox.Button className="w-full">
           <Combobox.Input
             placeholder={placeholder}
-            className="block w-full rounded-xl border-0 py-4 px-5 bg-[#3f4238] outline outline-[1px] outline-zinc-400 text-white font-light placeholder:text-white/70 focus:ring-[1px] focus:ring-white"
+            className="block w-full rounded-lg py-4 px-5 bg-transparent border-[1px] border-border text-textPrimary font-light placeholder:text-textSecondary focus:ring-[1px] focus:ring-primary"
             onChange={(e) => {
               setLocalOptions(
                 options.filter((op) => op.label.includes(e.target.value))
@@ -46,15 +46,17 @@ const Select: React.FC<{
         </Combobox.Button>
 
         {localOptions.length > 0 && (
-          <Combobox.Options className="outline outline-[1px] outline-zinc-400 absolute z-10 mt-2 p-2 max-h-60 w-full overflow-auto rounded-2xl bg-[#3f4238] text-base shadow-lg ring-opacity-5 focus:outline-none sm:text-sm">
+          <Combobox.Options className="border-[1px] border-border absolute z-10 mt-2 p-2 max-h-60 w-full overflow-auto rounded-lg bg-backgroundSecondary text-base shadow-lg ring-opacity-5 focus:outline-none sm:text-sm">
             {localOptions.map((option) => (
               <Combobox.Option
                 key={option.value}
                 value={option}
                 className={({ active }) =>
                   classNames(
-                    "cursor-pointer relative rounded-2xl select-none py-4 pl-3 pr-9",
-                    active ? "bg-[#353831] text-white" : "text-white"
+                    "cursor-pointer relative rounded-lg select-none py-4 pl-3 pr-9",
+                    active
+                      ? "bg-backgroundTertiary text-textPrimary"
+                      : "text-textPrimary"
                   )
                 }
               >
@@ -73,7 +75,7 @@ const Select: React.FC<{
                       <span
                         className={classNames(
                           "absolute inset-y-0 right-0 flex items-center pr-4",
-                          active ? "text-white" : "text-indigo-600"
+                          active ? "text-textPrimary" : "text-indigo-600"
                         )}
                       >
                         <CheckIcon className="h-5 w-5" aria-hidden="true" />

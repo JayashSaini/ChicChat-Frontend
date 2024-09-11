@@ -2,13 +2,13 @@ import { cn } from "@utils/index";
 import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { IconMenu2, IconX } from "@tabler/icons-react";
-import { Link, LinkProps, NavLink } from "react-router-dom";
-import logo from "@assets/logo.svg";
+import { LinkProps, NavLink } from "react-router-dom";
 import { SidebarProvider, useSidebar } from "@context/SliderContext";
-import { getLinks } from "../../Layout";
+import { getLinks, Logo } from "@layout/workspace.layout";
 import { useAuth } from "@context/AuthContext";
-import { Logo } from "../../Layout";
 import ToolTip from "@components/ui/tooltip";
+import WbSunnyIcon from "@mui/icons-material/WbSunny";
+import NightsStayIcon from "@mui/icons-material/NightsStay";
 
 interface Links {
   label: string;
@@ -76,7 +76,7 @@ export const MobileSidebar = ({
   const { logout } = useAuth();
   const links = getLinks(logout);
 
-  const { theme } = useSidebar();
+  const { theme, toggleTheme } = useSidebar();
 
   return (
     <>
@@ -87,12 +87,10 @@ export const MobileSidebar = ({
         {...props}
       >
         <div className="flex justify-between items-center z-20 w-full">
-          <Link to="/">
-            {" "}
-            <img src={logo} alt="" className="w-[110px] " />
-          </Link>
+          <Logo theme={theme} />
+
           <IconMenu2
-            className="text-neutral-200"
+            className="text-textPrimary"
             onClick={() => setOpen(!open)}
           />
         </div>
@@ -115,39 +113,67 @@ export const MobileSidebar = ({
                 className="absolute right-10 top-10 z-50 text-neutral-200"
                 onClick={() => setOpen(!open)}
               >
-                <IconX />
+                <IconX className="text-textPrimary" />
               </div>
               <Logo theme={theme} />
               <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
                 <div className="flex flex-col gap-2">
-                  {links.map((link, idx) => (
-                    <NavLink
-                      to={link.href}
-                      key={idx}
-                      className="flex items-center text-textPrimary justify-start gap-2 group/sidebar py-2"
-                      onClick={() => {
-                        if (open) setOpen(false);
-                      }}
-                    >
-                      {link.icon}
-                      {link.label}
-                    </NavLink>
-                  ))}
+                  {links.map((link, idx) => {
+                    return link?.onClick ? (
+                      <div
+                        key={idx}
+                        className="flex items-center text-textPrimary justify-start gap-2  group/sidebar py-2 cursor-pointer"
+                        onClick={link.onClick}
+                      >
+                        <ToolTip title={link.label}>{link.icon}</ToolTip>
+                        {link.label}
+                      </div>
+                    ) : (
+                      <NavLink
+                        to={link.href}
+                        key={idx}
+                        className="flex items-center text-textPrimary justify-start gap-2 group/sidebar py-2"
+                        onClick={() => {
+                          if (open) setOpen(false);
+                        }}
+                      >
+                        {link.icon}
+                        {link.label}
+                      </NavLink>
+                    );
+                  })}
                 </div>
               </div>
               <div>
+                <div
+                  className="flex items-center text-textPrimary justify-start gap-4 font-semibold group/sidebar py-2"
+                  onClick={() => {
+                    toggleTheme();
+                  }}
+                >
+                  <div className=" bg-backgroundSecondary p-2 rounded-full">
+                    {theme === "light" ? (
+                      <NightsStayIcon
+                        className="text-blue-500 "
+                        fontSize="small"
+                      />
+                    ) : (
+                      <WbSunnyIcon className="text-primary " fontSize="small" />
+                    )}
+                  </div>
+                </div>
                 <NavLink
-                  to={"/chat/profile"}
-                  className="flex items-center text-textPrimary justify-start gap-2 group/sidebar py-2"
+                  to={"/workspace/profile"}
+                  className="flex items-center text-textPrimary justify-start gap-4 font-semibold group/sidebar py-2"
                   onClick={() => {
                     if (open) setOpen(false);
                   }}
                 >
                   <img
                     src="https://res.cloudinary.com/dcvb5vgyf/image/upload/c_scale,h_500,w_500/oysy3d5lzxjzjp8am3bi.jpg" // Placeholder image
-                    className="h-7 w-7 flex-shrink-0 rounded-full"
-                    width={50}
-                    height={50}
+                    className="flex-shrink-0 rounded-full"
+                    width={35}
+                    height={35}
                     alt="Avatar"
                   />
                   Profile

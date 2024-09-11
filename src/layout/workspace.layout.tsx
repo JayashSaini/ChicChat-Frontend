@@ -20,17 +20,17 @@ import { useSidebar } from "@context/SliderContext";
 export const getLinks = (logout: any) => [
   {
     label: "Chat",
-    href: "/chat",
+    href: "/workspace/chat",
     icon: <IconMessage className="h-5 w-5 flex-shrink-0" />,
   },
   {
     label: "Video",
-    href: "/chat/video",
+    href: "/workspace/video",
     icon: <IconVideo className="h-5 w-5 flex-shrink-0" />,
   },
   {
     label: "Settings",
-    href: "/chat/settings",
+    href: "/workspace/settings",
     icon: <IconSettings className="h-5 w-5 flex-shrink-0" />,
   },
   {
@@ -43,7 +43,7 @@ export const getLinks = (logout: any) => [
   },
 ];
 
-function Layout() {
+function Workspace() {
   const token: string | null = LocalStorage.get("token");
   const navigate = useNavigate();
 
@@ -64,10 +64,12 @@ function Layout() {
   const [open, setOpen] = useState(false);
   const { theme, toggleTheme } = useSidebar();
 
+  const { user } = useAuth();
+
   return (
     <div
       className={cn(
-        "w-full h-screen rounded-md flex flex-col md:flex-row flex-1 overflow-hidden"
+        "w-full  rounded-md flex flex-col md:flex-row flex-1 overflow-hidden"
       )}
     >
       <Sidebar open={open} setOpen={setOpen}>
@@ -79,17 +81,20 @@ function Layout() {
               ))}
             </div>
           </div>
-          <div className="m-auto">
+          <div className="w-full  flex flex-col items-center justify-center">
             <SidebarLink
               link={{
                 label: "theme",
                 href: "#",
                 icon: (
-                  <div className="bg-backgroundSecondary p-2 rounded-full">
+                  <div className=" bg-backgroundSecondary p-2 rounded-full">
                     {theme === "light" ? (
-                      <NightsStayIcon className="text-blue-500" />
+                      <NightsStayIcon
+                        className="text-blue-500 "
+                        fontSize="small"
+                      />
                     ) : (
-                      <WbSunnyIcon className="text-primary" />
+                      <WbSunnyIcon className="text-primary " fontSize="small" />
                     )}
                   </div>
                 ),
@@ -101,11 +106,14 @@ function Layout() {
             <SidebarLink
               link={{
                 label: "Profile",
-                href: "/chat/profile",
+                href: "/workspace/profile",
                 icon: (
                   <Avatar
-                    src="https://res.cloudinary.com/dcvb5vgyf/image/upload/c_scale,h_500,w_500/oysy3d5lzxjzjp8am3bi.jpg" // Placeholder image
-                    className="h-8 w-8 flex-shrink-0 rounded-full"
+                    src={
+                      user?.avatar?.url ||
+                      "https://res.cloudinary.com/dcvb5vgyf/image/upload/c_scale,h_500,w_500/oysy3d5lzxjzjp8am3bi.jpg"
+                    } // Placeholder image
+                    className="h-5 w-5 flex-shrink-0 rounded-full"
                     alt="Avatar"
                   />
                 ),
@@ -123,12 +131,12 @@ function Layout() {
 
 export const LogoIcon = () => {
   return (
-    <Link to="/chat" className="relative z-20">
+    <Link to="/workspace/chat" className="relative z-20">
       <img
         src={logoIcon}
         alt="Logo Icon"
         style={{ width: "55px", height: "55px" }} // Inline styles to enforce size
-        className="w-[55px] h-[55px] max-w-none" // Tailwind CSS utility classes
+        className="w-[55px] h-[55px] max-w-none select-none" // Tailwind CSS utility classes
       />
     </Link>
   );
@@ -139,16 +147,16 @@ export const Logo: React.FC<{
 }> = ({ theme }) => {
   return (
     <Link
-      to="/chat"
-      className="font-normal flex space-x-2 items-center py-1 relative z-20"
+      to="/workspace/chat"
+      className="font-normal flex space-x-2 items-center py-1 relative z-20 select-none"
     >
       <img
         src={theme == "light" ? logoDark : logo}
         alt="Logo"
-        className="sm:w-[110px] w-[120px]"
+        className="w-[110px] "
       />
     </Link>
   );
 };
 
-export default Layout;
+export default Workspace;

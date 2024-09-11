@@ -1,41 +1,29 @@
-// Importing required modules and components from react-router-dom and other files.
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/login";
 import Register from "./pages/register";
-import ChatPage from "./pages/chat";
 import { useAuth } from "./context/AuthContext";
-import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
-import { useEffect } from "react";
-import Layout from "./Layout";
+import WorkspaceRoutesWrapper from "@routes/workspace.routes";
+import NotFound from "@components/NotFound";
 
-// Main App component
 const App = () => {
-  // Extracting 'token' and 'user' from the authentication context
   const { token, user } = useAuth();
-
-  // Set dark mode if the user's system prefers it
-  useEffect(() => {
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      document.documentElement.classList.add("dark");
-    }
-  }, []);
 
   return (
     <Routes>
-      {/* Redirect to chat if authenticated, otherwise to login */}
+      {/* Root route: redirect based on authentication */}
       <Route
         path="/"
         element={
           token && user?._id ? (
-            <Navigate to="/chat" />
+            <Navigate to="/workspace/chat/messages" />
           ) : (
             <Navigate to="/login" />
           )
         }
       />
 
-      {/* Public login route: Accessible by everyone */}
+      {/* Public login route */}
       <Route
         path="/login"
         element={
@@ -45,7 +33,7 @@ const App = () => {
         }
       />
 
-      {/* Public register route: Accessible by everyone */}
+      {/* Public register route */}
       <Route
         path="/register"
         element={
@@ -55,42 +43,13 @@ const App = () => {
         }
       />
 
-      {/* Layout route wrapping the chat page */}
-      <Route path="/chat" element={<Layout />}>
-        <Route
-          index
-          element={
-            <PrivateRoute>
-              <ChatPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="*"
-          element={
-            <div className="w-full h-screen bg-background flex items-center justify-center">
-              <p className="text-base text-textPrimary">
-                404 Page Not Found | Not Designed yet
-              </p>
-            </div>
-          }
-        />
-      </Route>
+      {/* Private workspace route */}
+      <Route path="/workspace/*" element={<WorkspaceRoutesWrapper />} />
 
-      {/* Wildcard route for undefined paths */}
-      <Route
-        path="*"
-        element={
-          <div className="w-full h-screen bg-background flex items-center justify-center">
-            <p className="text-base text-textPrimary">
-              404 Page Not Found | Not Designed yet
-            </p>
-          </div>
-        }
-      />
+      {/* Global 404 fallback */}
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };
 
-// Exporting the App component to be used in other parts of the application
 export default App;

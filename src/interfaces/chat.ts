@@ -3,7 +3,7 @@ import { UserInterface } from "./user";
 export interface ChatListItemInterface {
   admin: string;
   createdAt: string;
-  isGroupChat: true;
+  isGroupChat: boolean;
   lastMessage?: ChatMessageInterface;
   name: string;
   participants: UserInterface[];
