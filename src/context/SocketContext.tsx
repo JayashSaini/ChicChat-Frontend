@@ -8,7 +8,7 @@ const getSocket = () => {
   const token = LocalStorage.get("token"); // Retrieve jwt token from local storage or cookie
 
   // Create a socket connection with the provided URI and authentication
-  return socketio(import.meta.env.VITE_SOCKET_URI, {
+  return socketio(import.meta.env.VITE_SERVER_URI, {
     withCredentials: true,
     auth: { token },
   });

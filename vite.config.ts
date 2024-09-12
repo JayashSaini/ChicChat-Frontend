@@ -2,8 +2,11 @@ import { defineConfig } from "vite";
 import dns from "dns";
 import react from "@vitejs/plugin-react";
 import path from "path";
+import dotenv from "dotenv";
 
 dns.setDefaultResultOrder("verbatim");
+
+dotenv.config();
 
 // https://vitejs.dev/config/
 export default defineConfig({
