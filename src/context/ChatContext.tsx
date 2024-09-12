@@ -294,7 +294,6 @@ const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Check for saved user and token in local storage during component initialization
   useEffect(() => {
-    console.log("user is : ", user);
     // Fetch the chat list from the server.
     getChats();
 
