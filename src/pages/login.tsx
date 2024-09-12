@@ -29,7 +29,7 @@ const Login = () => {
   const handleLogin = async () => await login(data);
 
   return (
-    <div className="dark:bg-[#121212] bg-[#fefefe] flex justify-center items-center flex-col p-4 sm:h-screen h-[100vh] w-screen">
+    <div className="dark:bg-black/[0.96] bg-[#fefefe] flex justify-center items-center flex-col p-4 sm:h-screen h-[100vh] w-screen">
       <div className="sm:max-w-screen-sm w-full p-4 flex justify-center items-center sm:gap-5 gap-4 flex-col  shadow-md rounded-2xl  border border-border">
         <h1 className="text-2xl m-4 text-textPrimary font-medium">
           Sign In to your Account

@@ -1,27 +1,16 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Login from "./pages/login";
 import Register from "./pages/register";
-import { useAuth } from "./context/AuthContext";
+import Home from "./pages/home";
 import PublicRoute from "./components/PublicRoute";
 import WorkspaceRoutesWrapper from "@routes/workspace.routes";
 import NotFound from "@components/NotFound";
 
 const App = () => {
-  const { token, user } = useAuth();
-
   return (
     <Routes>
       {/* Root route: redirect based on authentication */}
-      <Route
-        path="/"
-        element={
-          token && user?._id ? (
-            <Navigate to="/workspace/chat/messages" />
-          ) : (
-            <Navigate to="/login" />
-          )
-        }
-      />
+      <Route path="/" element={<Home />} />
 
       {/* Public login route */}
       <Route

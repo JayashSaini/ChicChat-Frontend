@@ -200,7 +200,7 @@ const ChatWindow: React.FC = React.memo(() => {
           </div>
           <div
             className={classNames(
-              "p-8 custom-scrollbar overflow-y-auto flex flex-col-reverse gap-6 w-full",
+              "sm:p-8 p-4 custom-scrollbar overflow-y-auto flex flex-col-reverse gap-6 w-full",
               attachedFiles.length > 0
                 ? "h-[calc(100vh-336px)]"
                 : "h-[calc(100vh-176px)]"

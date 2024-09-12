@@ -29,15 +29,15 @@
 /* Dark theme */
 .dark {
   --color-primary: #ffc107; /* Amber Yellow */
-  --color-background: #262626; /* Very Dark Gray (Main Background) */
-  --color-background-secondary: #1e1e1e; /* Darker Gray (Secondary Background) */
-  --color-background-tertiary: #2c2c2c; /* Even Darker Gray (Tertiary Background) */
+  --color-background: #111111; /* Very Dark Gray (Main Background) */
+  --color-background-secondary: #141414; /* Darker Gray (Secondary Background) */
+  --color-background-tertiary: #171717; /* Even Darker Gray (Tertiary Background) */
   --color-text-primary: #f0f0f0; /* Light Gray */
   --color-text-secondary: #b3b3b3; /* Medium Gray */
   --color-button-bg: #ffc107; /* Amber Yellow */
   --color-button-text: #333333; /* Dark Charcoal */
-  --color-border: #2c2c2c; /* Darker Gray */
-  --color-card-bg: #1a1a1a; /* Nearly Black */
+  --color-border: #262626; /* Darker Gray */
+  --color-card-bg: #121212; /* Nearly Black */
 }
 
 .truncate-1 {
