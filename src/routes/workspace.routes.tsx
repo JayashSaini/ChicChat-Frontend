@@ -5,15 +5,20 @@ import PrivateRoute from "@components/PrivateRoute";
 import ChatRoutes from "./chat.routes";
 import NotFound from "@components/NotFound";
 import { ChatProvider } from "@context/ChatContext";
-import Video from "@pages/video";
+import Video from "@pages/stream/stream";
 import Settings from "@pages/settings";
+import Room from "@pages/stream/room";
+import { RoomProvider } from "@context/RoomContext";
+import RequestToJoinRoom from "@pages/stream/requestToJoinRoom";
 
 const WorkspaceRoutes: React.FC = () => (
   <Routes>
     <Route path="/" element={<Workspace />}>
-      <Route index={true} path="/chat/*" element={<ChatRoutes />} />
+      <Route path="/chat/*" element={<ChatRoutes />} />
 
-      <Route path="/video" element={<Video />} />
+      <Route path="/stream" element={<Video />} />
+      <Route path="/stream/room/:roomId" element={<Room />} />
+      <Route path="/stream/room/join/:roomId" element={<RequestToJoinRoom />} />
       <Route path="/settings" element={<Settings />} />
 
       {/* 404 page */}
@@ -25,7 +30,9 @@ const WorkspaceRoutes: React.FC = () => (
 const WorkspaceRoutesWrapper: React.FC = () => (
   <PrivateRoute>
     <ChatProvider>
-      <WorkspaceRoutes />
+      <RoomProvider>
+        <WorkspaceRoutes />
+      </RoomProvider>
     </ChatProvider>
   </PrivateRoute>
 );

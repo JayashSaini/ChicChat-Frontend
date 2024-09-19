@@ -16,6 +16,12 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         </SocketProvider>
       </SidebarProvider>
     </AuthProvider>
-    <Toaster position="bottom-right" duration={2000} theme="system" />
+    <Toaster
+      position="bottom-right"
+      duration={2000}
+      toastOptions={{
+        className: "custom-toast",
+      }}
+    />
   </BrowserRouter>
 );

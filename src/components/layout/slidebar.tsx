@@ -124,6 +124,7 @@ export const MobileSidebar = ({
                         key={idx}
                         className="flex items-center text-textPrimary justify-start gap-2  group/sidebar py-2 cursor-pointer"
                         onClick={link.onClick}
+                        role="button"
                       >
                         <ToolTip title={link.label}>{link.icon}</ToolTip>
                         {link.label}
@@ -201,14 +202,17 @@ export const SidebarLink = ({
     <div
       className="m-auto flex items-center text-textPrimary justify-start gap-2  group/sidebar py-2 cursor-pointer"
       onClick={link.onClick}
+      role="button"
     >
       <ToolTip title={link.label}>{link.icon}</ToolTip>
     </div>
   ) : (
     <NavLink
       to={link.href}
-      className={
-        "m-auto flex items-center text-textPrimary justify-start  group/sidebar py-2"
+      className={({ isActive }) =>
+        `m-auto flex items-center  justify-start  group/sidebar py-2 ${
+          isActive ? "text-primary" : "text-textPrimary"
+        }`
       }
       {...props}
       onClick={() => {

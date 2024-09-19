@@ -99,6 +99,18 @@ const deleteMessage = (chatId: string, messageId: string) => {
   return apiClient.delete(`message/${chatId}/${messageId}`);
 };
 
+const createRoom = () => {
+  return apiClient.post("/rooms");
+};
+
+const joinRoom = (data: {
+  link?: string;
+  password?: string;
+  roomId?: string;
+}) => {
+  return apiClient.post("/rooms/join", data);
+};
+
 // Export all the API functions
 export {
   addParticipantToGroup,
@@ -117,4 +129,6 @@ export {
   sendMessage,
   updateGroupName,
   deleteMessage,
+  createRoom,
+  joinRoom,
 };

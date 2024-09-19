@@ -25,7 +25,7 @@ export const getLinks = (logout: any) => [
   },
   {
     label: "Video",
-    href: "/workspace/video",
+    href: "/workspace/stream",
     icon: <IconVideo className="h-5 w-5 flex-shrink-0" />,
   },
   {
@@ -122,7 +122,7 @@ function Workspace() {
           </div>
         </SidebarBody>
       </Sidebar>
-      <div className="w-full h-screen overflow-x-hidden">
+      <div className="w-full md:h-screen h-[calc(100vh-56px)] overflow-x-hidden">
         <Outlet />
       </div>
     </div>

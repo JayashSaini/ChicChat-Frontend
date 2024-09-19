@@ -16,7 +16,7 @@ const ChatRoutes: React.FC = () => {
       <Route path="/" element={<ChatLayout />}>
         {/* Index route should only trigger when user is on exact '/workspace/chat/' */}
         <Route
-          index
+          path="/"
           element={
             isMobileScreen ? (
               <ErrorBoundary

@@ -10,7 +10,7 @@ const App = () => {
   return (
     <Routes>
       {/* Root route: redirect based on authentication */}
-      <Route path="/" element={<Home />} />
+      <Route path="/" index element={<Home />} />
 
       {/* Public login route */}
       <Route

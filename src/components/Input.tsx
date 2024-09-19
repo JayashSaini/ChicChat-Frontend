@@ -8,7 +8,7 @@ const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = (
     <input
       {...props}
       className={classNames(
-        "block w-full rounded-md border border-border py-3 px-4 bg-transparent text-textPrimary placeholder:text-textSecondary focus:outline-none focus:ring-2 focus:ring-primary",
+        "block w-full rounded-md border border-border py-3 px-4 bg-transparent text-textPrimary placeholder:text-textSecondary focus:outline-none focus:ring-2 focus:ring-[#ffc1079f]",
         props.className || ""
       )}
     />

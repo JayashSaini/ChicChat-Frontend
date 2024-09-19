@@ -14,6 +14,20 @@
 /* Default light theme */
 /* Default light theme */
 :root {
+  --color-primary: #ffc107; /* Amber Yellow */
+  --color-background: #111111; /* Very Dark Gray (Main Background) */
+  --color-background-secondary: #141414; /* Darker Gray (Secondary Background) */
+  --color-background-tertiary: #171717; /* Even Darker Gray (Tertiary Background) */
+  --color-text-primary: #f0f0f0; /* Light Gray */
+  --color-text-secondary: #b3b3b3; /* Medium Gray */
+  --color-button-bg: #ffc107; /* Amber Yellow */
+  --color-button-text: #333333; /* Dark Charcoal */
+  --color-border: #303030; /* Darker Gray */
+  --color-card-bg: #121212; /* Nearly Black */
+}
+
+/* Dark theme */
+.light {
   --color-primary: #d4ab2e; /* Amber Yellow */
   --color-background: #f5f5f5; /* Very Light Gray (Main Background) */
   --color-background-secondary: #e0e0e0; /* Light Gray (Secondary Background) */
@@ -24,20 +38,6 @@
   --color-button-text: #333333; /* Dark Charcoal */
   --color-border: #a1a1aa; /* Light Gray */
   --color-card-bg: #ffffff; /* White */
-}
-
-/* Dark theme */
-.dark {
-  --color-primary: #ffc107; /* Amber Yellow */
-  --color-background: #111111; /* Very Dark Gray (Main Background) */
-  --color-background-secondary: #141414; /* Darker Gray (Secondary Background) */
-  --color-background-tertiary: #171717; /* Even Darker Gray (Tertiary Background) */
-  --color-text-primary: #f0f0f0; /* Light Gray */
-  --color-text-secondary: #b3b3b3; /* Medium Gray */
-  --color-button-bg: #ffc107; /* Amber Yellow */
-  --color-button-text: #333333; /* Dark Charcoal */
-  --color-border: #262626; /* Darker Gray */
-  --color-card-bg: #121212; /* Nearly Black */
 }
 
 .truncate-1 {
@@ -59,6 +59,12 @@
     transform: translateY(20%);
     opacity: 1;
   }
+}
+
+.custom-toast {
+  background-color: var(--color-background-secondary);
+  color: var(--color-text-primary);
+  padding: 15px 10px;
 }
 
 .animation1 {

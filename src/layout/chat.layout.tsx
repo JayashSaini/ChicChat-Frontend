@@ -8,7 +8,7 @@ const ChatSideBar = React.lazy(() => import("@components/chat/ChatSidebar"));
 const Chat = () => {
   const { isMobileScreen } = useSidebar();
   return (
-    <div className="bg-background w-full h-screen flex">
+    <div className="bg-background w-full md:h-screen h-[calc(100vh-56px)] flex">
       {!isMobileScreen && (
         <ErrorBoundary fallback={<div>🥲 Error occur in Chat Sidebar.</div>}>
           <Suspense fallback={<Loader />}>

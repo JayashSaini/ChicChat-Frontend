@@ -9,6 +9,7 @@ import React, { useRef, useState } from "react";
 import {
   classNames,
   getChatObjectMetadata,
+  isImageFile,
   requestHandler,
 } from "@utils/index";
 import { useChat } from "@context/ChatContext";
@@ -107,7 +108,9 @@ const ChatWindow: React.FC = React.memo(() => {
     );
   };
 
-  const handleOnMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOnMessageChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     // Update the message state with the current input value
     setMessageHandler(e.target.value);
 
@@ -142,7 +145,7 @@ const ChatWindow: React.FC = React.memo(() => {
   };
 
   return (
-    <div className="md:w-3/5 w-full h-screen  overflow-y-auto bg-background">
+    <div className="md:w-3/5 w-full md:h-screen h-[calc(100vh-56px)] overflow-y-auto bg-background">
       {currentChat.current && currentChat.current?._id ? (
         <>
           <div className=" bg-backgroundSecondary p-4 sticky top-0 z-20 flex justify-between items-center w-full  border-border">
@@ -202,8 +205,8 @@ const ChatWindow: React.FC = React.memo(() => {
             className={classNames(
               "sm:p-8 p-4 custom-scrollbar overflow-y-auto flex flex-col-reverse gap-6 w-full",
               attachedFiles.length > 0
-                ? "h-[calc(100vh-336px)]"
-                : "h-[calc(100vh-176px)]"
+                ? "md:h-[calc(100vh-336px)] h-[calc(100vh-392px)]"
+                : "md:h-[calc(100vh-176px)] h-[calc(100vh-232px)]"
             )}
             id="message-window"
           >
@@ -248,11 +251,17 @@ const ChatWindow: React.FC = React.memo(() => {
                         <XCircleIcon className="h-6 w-6 text-textPrimary" />
                       </button>
                     </div>
-                    <img
-                      className="h-full rounded-xl w-full object-cover"
-                      src={URL.createObjectURL(file)}
-                      alt="attachment"
-                    />
+                    {isImageFile(URL.createObjectURL(file)) ? (
+                      <img
+                        className="h-full rounded-xl w-full object-cover"
+                        src={URL.createObjectURL(file)}
+                        alt="attachment"
+                      />
+                    ) : (
+                      <div className=" text-sm flex justify-center items-center h-full w-full bg-[#ffc1078a] text-textPrimary px-5 rounded-lg">
+                        <p>No preview available</p>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -279,16 +288,24 @@ const ChatWindow: React.FC = React.memo(() => {
               <PaperClipIcon className="w-6 h-6 text-textPrimary" />
             </label>
 
-            <Input
+            <textarea
               placeholder="Message"
               value={message}
               onChange={handleOnMessageChange}
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault(); // Prevent default new line on Enter key
                   sendChatMessage();
                 }
               }}
+              style={{
+                whiteSpace: "pre-wrap",
+                resize: "none",
+              }}
+              rows={1}
+              className="block w-full rounded-md border border-border py-3 px-4 bg-transparent text-textPrimary placeholder:text-textSecondary focus:outline-none focus:ring-2 focus:ring-[#ffc1079f]"
             />
+
             <button
               onClick={sendChatMessage}
               disabled={
