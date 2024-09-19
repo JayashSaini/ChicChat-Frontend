@@ -36,7 +36,7 @@
   --color-text-secondary: #666666; /* Gray */
   --color-button-bg: #ffc107; /* Amber Yellow */
   --color-button-text: #333333; /* Dark Charcoal */
-  --color-border: #a1a1aa; /* Light Gray */
+  --color-border: #cacaca; /* Light Gray */
   --color-card-bg: #ffffff; /* White */
 }
 
@@ -99,4 +99,43 @@
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background-color: var(--color-text-secondary); /* Thumb color */
   border-radius: 10px; /* Rounded edges */
+}
+
+/* From Uiverse.io by Gautammsharma */
+.material-checkbox {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.material-checkbox input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.checkmark {
+  position: relative;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 12px;
+  border: 2px solid var(--color-border);
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.material-checkbox input[type="checkbox"]:checked ~ .checkmark:after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  width: 4px;
+  height: 10px;
+  border: solid var(--color-text-primary); /* Update this to change tick color */
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }

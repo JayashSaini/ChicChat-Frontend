@@ -1,6 +1,7 @@
 // Import necessary modules and utilities
 import axios from "axios";
 import { LocalStorage } from "../utils";
+import { ProfileInterface } from "@interfaces/user";
 
 // Create an Axios instance for API requests
 const apiClient = axios.create({
@@ -38,6 +39,10 @@ const registerUser = (data: {
 
 const logoutUser = () => {
   return apiClient.post("/users/logout");
+};
+
+const updateAvatar = (data: any) => {
+  return apiClient.patch(`/users/update-avatar`, data);
 };
 
 const getAvailableUsers = () => {
@@ -111,6 +116,14 @@ const joinRoom = (data: {
   return apiClient.post("/rooms/join", data);
 };
 
+const updateProfile = (data: ProfileInterface) => {
+  return apiClient.patch(`/profile`, data);
+};
+
+const getProfile = () => {
+  return apiClient.get(`/profile`);
+};
+
 // Export all the API functions
 export {
   addParticipantToGroup,
@@ -131,4 +144,7 @@ export {
   deleteMessage,
   createRoom,
   joinRoom,
+  updateProfile,
+  getProfile,
+  updateAvatar,
 };

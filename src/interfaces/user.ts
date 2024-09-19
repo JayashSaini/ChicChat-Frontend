@@ -10,3 +10,10 @@ export interface UserInterface {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface ProfileInterface {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phoneNumber?: string;
+}

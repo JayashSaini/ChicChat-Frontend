@@ -10,6 +10,7 @@ import Settings from "@pages/settings";
 import Room from "@pages/stream/room";
 import { RoomProvider } from "@context/RoomContext";
 import RequestToJoinRoom from "@pages/stream/requestToJoinRoom";
+import Profile from "@pages/profile";
 
 const WorkspaceRoutes: React.FC = () => (
   <Routes>
@@ -20,6 +21,8 @@ const WorkspaceRoutes: React.FC = () => (
       <Route path="/stream/room/:roomId" element={<Room />} />
       <Route path="/stream/room/join/:roomId" element={<RequestToJoinRoom />} />
       <Route path="/settings" element={<Settings />} />
+
+      <Route path="/profile" element={<Profile />} />
 
       {/* 404 page */}
       <Route path="*" element={<NotFound />} />

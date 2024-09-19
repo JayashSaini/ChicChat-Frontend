@@ -30,7 +30,15 @@ export const requestHandler = async (
       localStorage.clear(); // Clear local storage on authentication issues
       if (isBrowser) window.location.href = "/login"; // Redirect to login page
     }
-    onError(error?.response?.data?.message || "Something went wrong");
+    if (422 == error?.response.data?.statusCode) {
+      const errorObject = new Object(error?.response?.data.errors[0]);
+      const message = Object.values(errorObject)[0];
+      onError(
+        message || error?.response?.data?.message || "Something went wrong"
+      );
+    } else {
+      onError(error?.response?.data?.message || "Something went wrong");
+    }
   } finally {
     // Hide loading state if setLoading function is provided
     setLoading && setLoading(false);

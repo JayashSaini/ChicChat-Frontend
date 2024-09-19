@@ -72,8 +72,8 @@ const ChatItem: React.FC<{
           unreadCount > 0
             ? "border-yellow-500 bg-yellow-500/20 font-bold hover:bg-yellow-600/20" // If unreadCount > 0, prioritize this
             : isActive
-            ? "dark:border-zinc-100 border-zinc-400  bg-backgroundTertiary" // If isActive is true and unreadCount is 0
-            : "dark:border-zinc-600 border-zinc-300", // Default case when neither isActive nor unreadCount > 0
+            ? "dark:border-zinc-400 border-zinc-300  bg-backgroundTertiary" // If isActive is true and unreadCount is 0
+            : "dark:border-zinc-600 border-zinc-200", // Default case when neither isActive nor unreadCount > 0
 
           "border-[1px]" // Ensure border width is always applied
         )}

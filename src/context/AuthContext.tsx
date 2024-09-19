@@ -17,12 +17,14 @@ const AuthContext = createContext<{
     password: string;
   }) => Promise<void>;
   logout: () => Promise<void>;
+  updateAvatar: (user: UserInterface) => void;
 }>({
   user: null,
   token: null,
   login: async () => {},
   register: async () => {},
   logout: async () => {},
+  updateAvatar: async () => {},
 });
 
 // Create a hook to access the AuthContext
@@ -87,6 +89,11 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     );
   };
 
+  const updateAvatar = (user: UserInterface) => {
+    setUser(user);
+    LocalStorage.set("user", JSON.stringify(user));
+  };
+
   // Check for saved user and token in local storage during component initialization
   useEffect(() => {
     setIsLoading(true);
@@ -101,7 +108,9 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Provide authentication-related data and functions through the context
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, token }}>
+    <AuthContext.Provider
+      value={{ user, login, register, logout, token, updateAvatar }}
+    >
       {isLoading ? <Loader /> : children} {/* Display a loader while loading */}
     </AuthContext.Provider>
   );
