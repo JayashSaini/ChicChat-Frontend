@@ -1,5 +1,4 @@
 import MessageItem from "@components/chat/MessageItem";
-import Input from "@components/Input";
 import {
   PaperAirplaneIcon,
   PaperClipIcon,
