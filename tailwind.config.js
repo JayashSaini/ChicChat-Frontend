@@ -21,6 +21,7 @@ export default {
       animation: {
         spotlight: "spotlight 2s ease .75s 1 forwards",
         shimmer: "shimmer 5s linear infinite",
+        loader: "loader 2s linear infinite",
       },
       keyframes: {
         spotlight: {
@@ -36,6 +37,10 @@ export default {
         shimmer: {
           "0%": { backgroundPosition: "200% 0" },
           "100%": { backgroundPosition: "-200% 0" },
+        },
+        loader: {
+          "0%": { transform: "translateX(-100%)" }, // Start off-screen to the left
+          "100%": { transform: "translateX(200%)" }, // Move fully off-screen to the right
         },
       },
     },

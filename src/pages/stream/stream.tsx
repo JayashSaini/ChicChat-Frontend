@@ -4,23 +4,25 @@ import JoinRoomModel from "@components/stream/JoinRoomModel";
 import { useSidebar } from "@context/SliderContext";
 import { useState } from "react";
 import { toast } from "sonner";
+import { requestHandler } from "@utils/index";
+import { createRoom } from "@api/index";
+import { useNavigate } from "react-router-dom";
 
 const Video = () => {
   const [openJoinRoom, setOpenJoinRoom] = useState(false);
+  const [createRoomLoader,setCreateRoomLoader] = useState(false);
 
   const { theme } = useSidebar(); // Get the current theme (light or dark)
+  const navigate = useNavigate();
 
   const onCreateRoomHandler = () => {
-    // requestHandler(
-    //   async () => await createRoom(),
-    //   setCreateRoomLoader,
-    //   ({ data }) => {
-    //     navigate(`/workspace/stream/room/${data.room.roomId}`);
-    //   },
-    //   (e) => toast.error(e)
-    // );
-    return toast.info(
-      "⏳ This feature is on its way! We're working hard to get it ready for you."
+    requestHandler(
+      async () => await createRoom(),
+      setCreateRoomLoader,
+      ({ data }) => {
+        navigate(`/workspace/stream/room/${data.room.roomId}`);
+      },
+      (e) => toast.error(e)
     );
   };
 
@@ -63,9 +65,7 @@ const Video = () => {
         <div className="absolute md:top-32 top-20 flex flex-col sm:flex-row gap-4 items-center justify-center mt-10">
           <SecondaryButton
             onClick={() =>
-              toast.info(
-                "⏳ This feature is on its way! We're working hard to get it ready for you."
-              )
+              setOpenJoinRoom(true)
             }
             fullWidth={false}
           >
@@ -75,7 +75,7 @@ const Video = () => {
           <SecondaryButton
             onClick={onCreateRoomHandler}
             fullWidth={false}
-            // isLoading={createRoomLoader}
+            isLoading={createRoomLoader}
           >
             Create Room
           </SecondaryButton>

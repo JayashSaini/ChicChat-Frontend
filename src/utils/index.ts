@@ -31,7 +31,7 @@ export const requestHandler = async (
       if (isBrowser) window.location.href = "/login"; // Redirect to login page
     }
     if (422 == error?.response.data?.statusCode) {
-      const errorObject = new Object(error?.response?.data.errors[0]);
+      const errorObject = new Object(error?.response?.data?.errors[0]);
       const message = Object.values(errorObject)[0];
       onError(
         message || error?.response?.data?.message || "Something went wrong"

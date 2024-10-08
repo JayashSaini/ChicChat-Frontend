@@ -11,6 +11,7 @@ import Room from "@pages/stream/room";
 import { RoomProvider } from "@context/RoomContext";
 import RequestToJoinRoom from "@pages/stream/requestToJoinRoom";
 import Profile from "@pages/profile";
+import { MediaProvider } from "@context/MediaContext";
 
 const WorkspaceRoutes: React.FC = () => (
   <Routes>
@@ -20,6 +21,7 @@ const WorkspaceRoutes: React.FC = () => (
       <Route path="/stream" element={<Video />} />
       <Route path="/stream/room/:roomId" element={<Room />} />
       <Route path="/stream/room/join/:roomId" element={<RequestToJoinRoom />} />
+
       <Route path="/settings" element={<Settings />} />
 
       <Route path="/profile" element={<Profile />} />
@@ -34,7 +36,9 @@ const WorkspaceRoutesWrapper: React.FC = () => (
   <PrivateRoute>
     <ChatProvider>
       <RoomProvider>
-        <WorkspaceRoutes />
+        <MediaProvider>
+          <WorkspaceRoutes />
+        </MediaProvider>
       </RoomProvider>
     </ChatProvider>
   </PrivateRoute>

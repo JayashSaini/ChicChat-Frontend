@@ -19,8 +19,8 @@ const SecondaryButton: React.FC<SecondaryButtonProps> = ({
     <motion.button
       {...props}
       whileHover={isLoading ? {} : { scale: 1.05 }} // Only apply hover animation if not loading
-      className={`inline-flex items-center justify-center rounded-md border border-border 
-        transition-transform transform focus:outline-none shadow-md px-16 py-3 font-medium text-textPrimary
+      className={`inline-flex items-center justify-center rounded-md border dark:border-[#202020] border-[#e0e0e0] 
+        transition-transform transform focus:outline-none  px-16 py-3 font-medium text-textPrimary
         ${isLoading ? "cursor-not-allowed opacity-70" : ""}
         ${
           severity == "primary"

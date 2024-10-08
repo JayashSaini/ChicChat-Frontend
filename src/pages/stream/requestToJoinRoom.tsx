@@ -1,96 +1,72 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
+import { useMedia } from "@context/MediaContext";
+import { useRoom } from "@context/RoomContext";
+import { useParams } from "react-router-dom";
+import { useAuth } from "@context/AuthContext";
 
 const RequestToJoinRoom: React.FC = () => {
-  const [isVideoOn, setIsVideoOn] = useState<boolean>(true);
-  const [isAudioOn, setIsAudioOn] = useState<boolean>(true);
-  const [stream, setStream] = useState<MediaStream | null>(null);
-  const [videoError, setVideoError] = useState<string | null>(null); // New state for video errors
-  const [audioError, setAudioError] = useState<boolean>(false); // New state for audio errors
-  const [mediaSupported, setMediaSupported] = useState<boolean>(true); // New state for media support
-  const [permissionDenied, setPermissionDenied] = useState<boolean>(false); // New state for permission issues
+  const {
+    stream,
+    getMedia,
+    videoError,
+    audioError,
+    mediaSupported,
+    permissionDenied,
+    toggleVideo,
+    toggleAudio,
+    isAudioOn,
+    isVideoOn,
+  } = useMedia();
+  const { joinRoom, joinRoomLoader } = useRoom();
+  const { roomId } = useParams();
+  const { user } = useAuth();
+  const videoRef = useRef<HTMLVideoElement | null>(null); // Create a ref for the video element
 
+  const handleJoinRoom = () => {
+    joinRoom(roomId!, user!);
+  };
+
+  // Use useEffect to set the srcObject
   useEffect(() => {
-    // Check if browser supports media devices
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      // Request video and audio by default
-      navigator.mediaDevices
-        .getUserMedia({ video: true, audio: true })
-        .then((mediaStream) => {
-          setStream(mediaStream);
-          const videoElement = document.getElementById(
-            "userVideo"
-          ) as HTMLVideoElement;
-          if (videoElement) {
-            videoElement.srcObject = mediaStream;
-          }
-        })
-        .catch((error) => {
-          if (error.name === "NotFoundError") {
-            setVideoError("No camera found"); // Set video error message
-          }
-          if (error.name === "NotReadableError") {
-            setAudioError(true); // Disable audio button if no audio input
-          }
-          if (
-            error.name === "PermissionDeniedError" ||
-            error.name === "NotAllowedError"
-          ) {
-            setPermissionDenied(true); // Set permission denied flag
-            setVideoError("Permission to access camera and microphone denied.");
-          }
-        });
-    } else {
-      // Handle case when getUserMedia is not supported
-      setMediaSupported(false);
-      setVideoError("Your device or browser does not support media access.");
-    }
-
+    getMedia(); // Call getMedia to initiate media access
     return () => {
-      // Cleanup media stream when component unmounts
       if (stream) {
-        stream.getTracks().forEach((track) => track.stop());
+        stream.getTracks().forEach((track) => track.stop()); // Stop the tracks on cleanup
       }
     };
-  }, [stream]);
+  }, []); // Only run once when the component mounts
 
-  const toggleVideo = () => {
-    if (stream) {
-      const videoTrack = stream.getVideoTracks()[0];
-      if (videoTrack) {
-        videoTrack.enabled = !isVideoOn;
-        setIsVideoOn(!isVideoOn);
-      }
+  useEffect(() => {
+    if (videoRef.current && stream) {
+      videoRef.current.srcObject = stream; // Set the video element's source
     }
-  };
-
-  const toggleAudio = () => {
-    if (stream) {
-      const audioTrack = stream.getAudioTracks()[0];
-      if (audioTrack) {
-        audioTrack.enabled = !isAudioOn;
-        setIsAudioOn(!isAudioOn);
-      }
-    }
-  };
+  }, [stream]); // Run this effect when the stream changes
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-background text-textPrimary px-4">
-      <div className="relative w-full max-w-3xl bg-cardBg rounded-lg shadow-lg">
+    <div className="flex flex-col items-center justify-center h-screen bg-backgroundSecondary text-textPrimary px-4">
+      <div className="relative w-full max-w-3xl rounded-lg">
         {/* Video Container */}
-        <div className="w-full h-56 bg-backgroundTertiary rounded-lg overflow-hidden flex items-center justify-center">
+        <div className="max-w-screen-md w-full h-[500px] bg-backgroundTertiary rounded-lg overflow-hidden flex items-center justify-center">
           {videoError || !mediaSupported ? (
             <div className="text-center text-xl text-error h-full flex items-center justify-center">
               {videoError || "Media access not supported on your device"}
             </div>
           ) : (
             <video
-              id="userVideo"
+              ref={videoRef} // Attach the ref to the video element
               autoPlay
               muted
               className="w-full h-full object-cover"
             ></video>
           )}
         </div>
+
+        {/* Admin Response loader */}
+        {joinRoomLoader && (
+          <div className="w-full h-1 bg-gray-200 relative overflow-hidden mt-2">
+            <div className="absolute w-1/3 h-full bg-blue-500 animate-loader"></div>
+          </div>
+        )}
 
         {/* Media Access Notification */}
         {permissionDenied && (
@@ -103,32 +79,33 @@ const RequestToJoinRoom: React.FC = () => {
         )}
 
         {/* Control Buttons */}
-        <div className="flex flex-wrap justify-center gap-4 p-4 mt-4">
-          {/* Toggle Video */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
           <button
             onClick={toggleVideo}
-            className={`px-4 py-2 rounded-full font-semibold ${
-              isVideoOn ? "bg-danger" : "bg-gray-700"
+            className={`text-sm w-[180px] py-2 rounded-full transition duration-300 ease-in-out ${
+              isVideoOn ? "bg-red-500 text-white" : "bg-[#ffc107cc] text-black"
             } hover:bg-opacity-90`}
-            disabled={!!videoError || !mediaSupported || permissionDenied} // Disable if no video, no media support, or permission denied
+            disabled={!!videoError || !mediaSupported || permissionDenied}
           >
             {isVideoOn ? "Turn Off Video" : "Turn On Video"}
           </button>
 
-          {/* Toggle Audio */}
           <button
             onClick={toggleAudio}
-            className={`px-4 py-2 rounded-full font-semibold ${
-              isAudioOn ? "bg-success" : "bg-gray-700"
+            className={`text-sm w-[180px] py-2 rounded-full transition duration-300 ease-in-out ${
+              isAudioOn ? "bg-red-500 text-white" : "bg-[#ffc107cc] text-black"
             } hover:bg-opacity-90`}
-            disabled={audioError || !mediaSupported || permissionDenied} // Disable if no audio, no media support, or permission denied
+            disabled={audioError || !mediaSupported || permissionDenied}
           >
             {isAudioOn ? "Turn Off Audio" : "Turn On Audio"}
           </button>
 
-          {/* Request to Join */}
-          <button className="px-4 py-2 bg-buttonBg text-buttonText rounded-full font-semibold hover:bg-opacity-90">
-            Request to Join
+          <button
+            className="text-sm w-[180px] py-2 rounded-full transition duration-300 ease-in-out bg-sky-600 text-white"
+            onClick={handleJoinRoom}
+            disabled={joinRoomLoader}
+          >
+            {joinRoomLoader ? "Waiting..." : "Request to Join"}
           </button>
         </div>
       </div>
