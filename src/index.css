@@ -24,9 +24,10 @@
   --color-button-text: #333333; /* Dark Charcoal */
   --color-border: #303030; /* Darker Gray */
   --color-card-bg: #121212; /* Nearly Black */
+  --color-background-video: #202020;
 }
 
-/* Dark theme */
+/* light theme */
 .light {
   --color-primary: #d4ab2e; /* Amber Yellow */
   --color-background: #f5f5f5; /* Very Light Gray (Main Background) */
@@ -38,6 +39,7 @@
   --color-button-text: #333333; /* Dark Charcoal */
   --color-border: #cacaca; /* Light Gray */
   --color-card-bg: #ffffff; /* White */
+  --color-background-video: #e0e0e0;
 }
 
 .truncate-1 {

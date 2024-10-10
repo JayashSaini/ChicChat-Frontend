@@ -17,6 +17,7 @@ export default {
         cardBg: "var(--color-card-bg)",
         danger: "#eb3330", // Universal danger color
         success: "#4aac68", // Universal success color
+        backgroundVideo: "var(--color-background-video2)",
       },
       animation: {
         spotlight: "spotlight 2s ease .75s 1 forwards",
