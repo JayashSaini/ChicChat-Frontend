@@ -24,7 +24,7 @@ export const getLinks = (logout: () => void) => [
   },
   {
     label: "Video",
-    href: "/workspace/stream",
+    href: "/workspace/video",
     icon: <IconVideo className="h-5 w-5 flex-shrink-0" />,
   },
   {

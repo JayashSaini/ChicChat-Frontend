@@ -8,6 +8,7 @@ import { ChatProvider } from "@context/ChatContext";
 
 import Settings from "@pages/settings";
 import Profile from "@pages/profile";
+import Video from "@pages/video/video";
 
 const WorkspaceRoutes: React.FC = () => (
   // Wrap all routes with PrivateRoute for authentication protection
@@ -24,6 +25,8 @@ const WorkspaceRoutes: React.FC = () => (
             </ChatProvider>
           }
         />
+
+        <Route path="/video" element={<Video />} />
 
         {/* Other user-specific routes */}
         <Route path="/settings" element={<Settings />} />

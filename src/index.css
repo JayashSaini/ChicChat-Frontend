@@ -11,8 +11,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Default light theme */
-/* Default light theme */
+/* Default dark theme */
 :root {
   --color-primary: #ffc107; /* Amber Yellow */
   --color-background: #111111; /* Very Dark Gray (Main Background) */
@@ -27,22 +26,19 @@
   --color-background-video: #202020;
 }
 
-/* light theme */
+/* Optimized light theme */
 .light {
   --color-primary: #d4ab2e; /* Amber Yellow */
-  --color-background: #f5f5f5; /* Very Light Gray (Main Background) */
-  --color-background-secondary: #d0d0d0; /* Light Gray (Secondary Background) */
-  --color-background-secondary: #f5f5f5; /* Light Gray (Secondary Background) */
-  --color-background-secondary: #d0d0d0; /* Light Gray (Secondary Background) */
-  --color-background-tertiary: #e0e0e0; /* Slightly Darker Gray (Tertiary Background) */
-  /* Slightly Darker Gray (Tertiary Background) */
-  --color-text-primary: #303030; /* Dark Charcoal */
+  --color-background: #f8f8f8; /* Very Light Gray (Main Background) */
+  --color-background-secondary: #e8e8e8; /* Light Gray (Secondary Background) */
+  --color-background-tertiary: #f0f0f0; /* Slightly Darker Gray (Tertiary Background) */
+  --color-text-primary: #333333; /* Dark Charcoal */
   --color-text-secondary: #666666; /* Gray */
   --color-button-bg: #ffc107; /* Amber Yellow */
   --color-button-text: #333333; /* Dark Charcoal */
-  --color-border: #cacaca; /* Light Gray */
+  --color-border: #c8c8c8; /* Light Gray */
   --color-card-bg: #ffffff; /* White */
-  --color-background-video: #e0e0e0;
+  --color-background-video: #f0f0f0;
 }
 
 .truncate-1 {
