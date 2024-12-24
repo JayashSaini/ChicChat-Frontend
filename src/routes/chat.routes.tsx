@@ -1,18 +1,14 @@
 import React, { Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import ChatLayout from "@layout/chat.layout";
-import { useSidebar } from "@context/index";
-
+import { useSidebar } from "@context/SliderContext";
 import NotFound from "@components/NotFound";
 import ErrorBoundary from "@components/ErrorBoundary";
 import Loader from "@components/Loader";
-
-// Lazy load components for chat sidebar and chat window
 const ChatSidebar = React.lazy(() => import("@components/chat/ChatSidebar"));
 const ChatWindow = React.lazy(() => import("@pages/chatWindow"));
 
 const ChatRoutes: React.FC = () => {
-  // Use the sidebar context to determine if the screen is mobile-sized
   const { isMobileScreen } = useSidebar();
 
   return (
@@ -23,7 +19,6 @@ const ChatRoutes: React.FC = () => {
           path="/"
           element={
             isMobileScreen ? (
-              // Show ChatSidebar on mobile screens within an ErrorBoundary
               <ErrorBoundary
                 fallback={<div>🥲 Error occur in Chat Sidebar.</div>}
               >
@@ -32,12 +27,11 @@ const ChatRoutes: React.FC = () => {
                 </Suspense>
               </ErrorBoundary>
             ) : (
-              // Redirect to '/workspace/chat/messages' if not on mobile screen
               <Navigate to="/workspace/chat/messages" />
             )
           }
         />
-        {/* Route for displaying chat messages */}
+        {/* Messages route */}
         <Route
           path="/messages"
           element={
@@ -48,7 +42,6 @@ const ChatRoutes: React.FC = () => {
             </ErrorBoundary>
           }
         />
-        {/* Route to handle any undefined paths, showing the NotFound component */}
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

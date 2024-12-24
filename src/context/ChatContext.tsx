@@ -1,9 +1,15 @@
-import React, { createContext, useEffect, useRef, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { LocalStorage, requestHandler } from "../utils";
 import { ChatListItemInterface, ChatMessageInterface } from "@interfaces/chat";
 import { getChatMessages, getUserChats } from "@api/index";
 import { toast } from "sonner";
-import { useSocket } from "./index";
+import { useSocket } from "./SocketContext";
 
 // Sockets Events
 const CONNECTED_EVENT = "connected";
@@ -59,6 +65,9 @@ const ChatContext = createContext<{
   updateChatLastMessageOnDeletion: () => {},
   updateChatLastMessage: () => {},
 });
+
+// Create a hook to access the ChatContext
+const useChat = () => useContext(ChatContext);
 
 // Create a component that provides Chatentication-related data and functions
 const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -375,4 +384,4 @@ const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 };
 
 // Export the context, provider component, and custom hook
-export { ChatContext, ChatProvider };
+export { ChatContext, ChatProvider, useChat };

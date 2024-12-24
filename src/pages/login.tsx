@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Button from "@components/Button";
 import Input from "@components/Input";
-import { useAuth } from "@context/index";
+import { useAuth } from "@context/AuthContext";
 import { Link } from "react-router-dom";
 
 // Component for the Login page
@@ -30,18 +30,16 @@ const Login = () => {
 
   return (
     <div className="dark:bg-black/[0.96] bg-[#fefefe] flex justify-center items-center flex-col p-4 sm:h-screen h-[100vh] w-screen">
-      <div className="sm:max-w-screen-sm w-full p-4 flex justify-center items-center sm:gap-5 gap-4 flex-col shadow-md rounded-2xl border border-border">
+      <div className="sm:max-w-screen-sm w-full p-4 flex justify-center items-center sm:gap-5 gap-4 flex-col  shadow-md rounded-2xl  border border-border">
         <h1 className="text-2xl m-4 text-textPrimary font-medium">
           Sign In to your Account
         </h1>
-
         {/* Input for entering the username */}
         <Input
           placeholder="Enter the username..."
           value={data.username}
           onChange={handleDataChange("username")}
         />
-
         {/* Input for entering the password */}
         <Input
           placeholder="Enter the password..."
@@ -49,16 +47,14 @@ const Login = () => {
           value={data.password}
           onChange={handleDataChange("password")}
         />
-
         {/* Button to initiate the login process */}
         <Button
-          disabled={Object.values(data).some((val) => !val)} // Disables the button if any input field is empty
+          disabled={Object.values(data).some((val) => !val)}
           fullWidth
           onClick={handleLogin}
         >
           Login
         </Button>
-
         {/* Link to the registration page */}
         <small className="text-textSecondary">
           Don&apos;t have an account?{" "}

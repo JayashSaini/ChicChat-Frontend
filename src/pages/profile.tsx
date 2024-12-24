@@ -6,12 +6,11 @@ import { ProfileInterface } from "@interfaces/user";
 import Loader from "@components/Loader";
 import Button from "@components/Button";
 import Input from "@components/Input";
-import { useAuth } from "@context/index";
+import { useAuth } from "@context/AuthContext";
 import AvatarEditor from "react-avatar-editor";
 import { IconCamera } from "@tabler/icons-react";
 
 const Profile = () => {
-  // State variables
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [avatarLoading, setAvatarLoading] = useState(false);
@@ -28,7 +27,6 @@ const Profile = () => {
   const [editor, setEditor] = useState<AvatarEditor | null>(null);
   const [showEditor, setShowEditor] = useState(false);
 
-  // Submit profile update
   const onSubmit = async (data: ProfileInterface) => {
     requestHandler(
       async () => updateProfile(data),
@@ -39,17 +37,15 @@ const Profile = () => {
         toast.success("Profile updated successfully!");
       },
       (err: any) => {
-        toast.error(err.message || "An error occurred");
+        toast.error(err);
       }
     );
   };
 
-  // Handle input changes
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProfile({ ...profile, [e.target.name]: e.target.value });
   };
 
-  // Handle avatar change
   const onAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setImage(e.target.files[0]);
@@ -57,7 +53,6 @@ const Profile = () => {
     }
   };
 
-  // Save the avatar after editing
   const handleSaveAvatar = async () => {
     if (editor) {
       const canvas = editor.getImageScaledToCanvas();
@@ -75,15 +70,13 @@ const Profile = () => {
               setShowEditor(false);
             },
             (err: any) => {
-              toast.error(err.message || "Failed to update avatar");
+              toast.error(err);
             }
           );
         }
       });
     }
   };
-
-  // Fetch profile data on component mount
   useEffect(() => {
     requestHandler(
       async () => getProfile(),
@@ -92,12 +85,11 @@ const Profile = () => {
         const { firstName, lastName, email, phoneNumber } = data;
         setProfile({ firstName, lastName, email, phoneNumber });
       },
-      (err: any) => toast.error(err.message || "Error fetching profile data")
+      (err: any) => toast.error(err.message)
     );
   }, []);
 
   return loading ? (
-    // Loader while profile data is being fetched
     <Loader />
   ) : (
     <div className="w-full h-screen flex justify-center items-center bg-background">
@@ -111,10 +103,9 @@ const Profile = () => {
         <h1 className="text-3xl text-center text-textPrimary custom-font">
           Profile
         </h1>
-
-        {/* Profile fields */}
         <div className="w-full flex md:flex-row flex-col-reverse h-auto items-center justify-center gap-2">
           <div className="md:w-[70%] w-full space-y-3">
+            {/* Input for entering the firstName */}
             <div className="w-full">
               <Input
                 placeholder="Enter your first name..."
@@ -123,6 +114,7 @@ const Profile = () => {
                 onChange={onChangeHandler}
               />
             </div>
+            {/* Input for entering the lastName */}
             <div className="w-full">
               <Input
                 placeholder="Enter your last name..."
@@ -141,12 +133,10 @@ const Profile = () => {
               />
             </div>
           </div>
-
-          {/* Avatar section */}
           <div className="md:w-[30%] w-[60%] relative group cursor-pointer rounded-md overflow-hidden">
             <img src={user?.avatar.url} alt="User Avatar" className="w-full" />
             <div className="w-full h-full absolute top-0 left-0 -z-10 bg-[#00000073] flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:z-10 duration-150 ease-in-out">
-              {/* Hidden file input for avatar change */}
+              {/* Hidden file input */}
               <input
                 type="file"
                 className="absolute inset-0 opacity-0 cursor-pointer"
@@ -156,8 +146,6 @@ const Profile = () => {
             </div>
           </div>
         </div>
-
-        {/* Email input */}
         <div className="w-full">
           <Input
             type="email"
@@ -167,20 +155,16 @@ const Profile = () => {
             onChange={onChangeHandler}
           />
         </div>
-
-        {/* Submit button */}
         <div className="w-full pt-3">
           <Button
             fullWidth={true}
             disabled={submitLoading}
             isLoading={submitLoading}
           >
-            Save Profile
+            Save Profile{" "}
           </Button>
         </div>
       </form>
-
-      {/* Avatar editing modal */}
       {showEditor && image && (
         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
           <div className="bg-neutral-800 border-neutral-500 border-2 px-4 py-6 rounded-md">

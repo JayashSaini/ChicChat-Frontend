@@ -7,11 +7,11 @@ import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import moment from "moment";
 import React, { useState } from "react";
 import { deleteOneOnOneChat } from "../../api";
-import { useAuth, useSidebar } from "../../context";
+import { useAuth } from "../../context/AuthContext";
 import { ChatListItemInterface } from "../../interfaces/chat";
 import { classNames, getChatObjectMetadata, requestHandler } from "../../utils";
 import GroupChatDetailsModal from "./GroupChatDetailsModal";
-
+import { useSidebar } from "@context/SliderContext";
 import { useNavigate } from "react-router-dom";
 
 const ChatItem: React.FC<{
@@ -72,8 +72,8 @@ const ChatItem: React.FC<{
           unreadCount > 0
             ? "border-yellow-500 bg-yellow-500/20 font-bold hover:bg-yellow-600/20" // If unreadCount > 0, prioritize this
             : isActive
-              ? "dark:border-zinc-400 border-zinc-300  bg-backgroundTertiary" // If isActive is true and unreadCount is 0
-              : "dark:border-zinc-600 border-zinc-200", // Default case when neither isActive nor unreadCount > 0
+            ? "dark:border-zinc-400 border-zinc-300  bg-backgroundTertiary" // If isActive is true and unreadCount is 0
+            : "dark:border-zinc-600 border-zinc-200", // Default case when neither isActive nor unreadCount > 0
 
           "border-[1px]" // Ensure border width is always applied
         )}
@@ -142,10 +142,10 @@ const ChatItem: React.FC<{
                       i === 0
                         ? "left-0 z-[3]"
                         : i === 1
-                          ? "left-2.5 z-[2]"
-                          : i === 2
-                            ? "left-[18px] z-[1]"
-                            : ""
+                        ? "left-2.5 z-[2]"
+                        : i === 2
+                        ? "left-[18px] z-[1]"
+                        : ""
                     )}
                   />
                 );

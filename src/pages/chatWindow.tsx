@@ -11,12 +11,15 @@ import {
   isImageFile,
   requestHandler,
 } from "@utils/index";
-import { useChat, useAuth, useSidebar, useSocket } from "@context/index";
+import { useChat } from "@context/ChatContext";
+import { useAuth } from "@context/AuthContext";
 import Typing from "@components/chat/Typing";
 import { deleteMessage, sendMessage } from "@api/index";
 import { ChatMessageInterface } from "@interfaces/chat";
 import { toast } from "sonner";
+import { useSocket } from "@context/SocketContext";
 import { useNavigate } from "react-router-dom";
+import { useSidebar } from "@context/SliderContext";
 import { FaArrowLeft } from "react-icons/fa";
 
 // Sockets Events
@@ -169,10 +172,10 @@ const ChatWindow: React.FC = React.memo(() => {
                             i === 0
                               ? "left-0 z-30"
                               : i === 1
-                                ? "left-3 z-20"
-                                : i === 2
-                                  ? "left-5 z-10"
-                                  : ""
+                              ? "left-3 z-20"
+                              : i === 2
+                              ? "left-5 z-10"
+                              : ""
                           )}
                         />
                       );

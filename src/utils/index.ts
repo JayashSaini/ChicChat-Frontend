@@ -30,7 +30,6 @@ export const requestHandler = async (
       localStorage.clear(); // Clear local storage on authentication issues
       if (isBrowser) window.location.href = "/login"; // Redirect to login page
     }
-    // for Input Type validation errors
     if (422 == error?.response.data?.statusCode) {
       const errorObject = new Object(error?.response?.data?.errors[0]);
       const message = Object.values(errorObject)[0];
@@ -66,11 +65,10 @@ export const getChatObjectMetadata = (
   const lastMessage = chat.lastMessage?.content
     ? chat.lastMessage?.content
     : chat.lastMessage
-      ? `${chat.lastMessage?.attachments?.length} attachment${
-          chat.lastMessage.attachments.length > 1 ? "s" : ""
-          // eslint-disable-next-line no-mixed-spaces-and-tabs
-        }`
-      : "No messages yet"; // Placeholder text if there are no messages.
+    ? `${chat.lastMessage?.attachments?.length} attachment${
+        chat.lastMessage.attachments.length > 1 ? "s" : ""
+      }`
+    : "No messages yet"; // Placeholder text if there are no messages.
 
   if (chat.isGroupChat) {
     // Case: Group chat
