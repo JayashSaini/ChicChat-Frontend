@@ -1,0 +1,9 @@
+.vscode/
+.prettierignore
+.prettierrc
+CONTRIBUTING.md
+tsconfig.json
+webpack.config.js
+node_modules/
+!node_modules/prettier/*
+node_modules/prettier/esm

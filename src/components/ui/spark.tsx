@@ -6,7 +6,7 @@ import type { Container, SingleOrMultiple } from "@tsparticles/engine";
 import { loadSlim } from "@tsparticles/slim";
 import { cn } from "@utils/index";
 import { motion, useAnimation } from "framer-motion";
-import { useSidebar } from "@context/SliderContext"; // Update this path as needed
+import { useSidebar } from "@context/index"; // Update this path as needed
 
 type ParticlesProps = {
   id?: string;

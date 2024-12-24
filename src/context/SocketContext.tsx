@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import socketio, { Socket } from "socket.io-client";
 import { LocalStorage } from "../utils";
 
@@ -18,12 +18,9 @@ interface SocketContextType {
 }
 
 // Create a context to hold the socket instance
-const SocketContext = createContext<SocketContextType>({
+export const SocketContext = createContext<SocketContextType>({
   socket: null,
 });
-
-// Custom hook to access the socket instance from the context
-const useSocket = () => useContext(SocketContext);
 
 // SocketProvider component to manage the socket instance and provide it through context
 const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -49,4 +46,4 @@ const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-export { SocketProvider, useSocket };
+export { SocketProvider };
