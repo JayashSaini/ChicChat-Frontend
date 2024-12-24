@@ -9,13 +9,13 @@ import { styled, TooltipProps } from "@mui/material";
 
 const ReactionPicker: React.FC = () => {
   const [isPickerVisible, setIsPickerVisible] = useState<boolean>(false);
-  const [selectedReaction, setSelectedReaction] = useState<string | null>(null);
+  
 
   const emojis = ["😊", "❤️", "🎉", "👍", "😢"];
 
   // Handle emoji click
   const handleReactionClick = (emoji: string) => {
-    setSelectedReaction(emoji);
+  
     setIsPickerVisible(false); // Close the picker after selection
     toast("send to all", {
       duration: 4000,
