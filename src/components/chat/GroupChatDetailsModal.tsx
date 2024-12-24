@@ -6,7 +6,7 @@ import {
   UserPlusIcon,
   XMarkIcon,
 } from "@heroicons/react/20/solid";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useCallback, useEffect, useState } from "react";
 import {
   addParticipantToGroup,
   deleteGroup,
@@ -15,7 +15,7 @@ import {
   removeParticipantFromGroup,
   updateGroupName,
 } from "../../api";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context";
 import { ChatListItemInterface } from "../../interfaces/chat";
 import { UserInterface } from "../../interfaces/user";
 import { requestHandler } from "../../utils";
@@ -171,7 +171,7 @@ const GroupChatDetailsModal: React.FC<{
   };
 
   // Function to fetch group information
-  const fetchGroupInformation = async () => {
+  const fetchGroupInformation = useCallback(async () => {
     requestHandler(
       // Fetching group info for a specific chatId
       async () => await getGroupInfo(chatId),
@@ -186,7 +186,7 @@ const GroupChatDetailsModal: React.FC<{
       // If the request fails, show an alert
       alert
     );
-  };
+  }, [chatId]);
 
   // Function to handle modal or component closure
   const handleClose = () => {
@@ -201,7 +201,7 @@ const GroupChatDetailsModal: React.FC<{
     // Fetch group information and users when the modal or component opens
     fetchGroupInformation();
     getUsers();
-  }, [open]); // The effect is dependent on the 'open' state or prop, so it re-runs whenever 'open' changes
+  }, [open, fetchGroupInformation]); // The effect is dependent on the 'open' state or prop, so it re-runs whenever 'open' changes
 
   return (
     <Transition.Root show={open} as={Fragment}>

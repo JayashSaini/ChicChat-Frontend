@@ -5,60 +5,35 @@ import PrivateRoute from "@components/PrivateRoute";
 import ChatRoutes from "./chat.routes";
 import NotFound from "@components/NotFound";
 import { ChatProvider } from "@context/ChatContext";
-import Video from "@pages/stream/stream";
+
 import Settings from "@pages/settings";
-import Room from "@pages/stream/room";
-import { RoomProvider } from "@context/RoomContext";
-import RequestToJoinRoom from "@pages/stream/requestToJoinRoom";
 import Profile from "@pages/profile";
-import { MediaProvider } from "@context/MediaContext";
 
 const WorkspaceRoutes: React.FC = () => (
+  // Wrap all routes with PrivateRoute for authentication protection
   <PrivateRoute>
     <Routes>
       <Route path="/" element={<Workspace />}>
-        {/* ChatContext is only required for chat routes */}
-
+        {/* ChatContext is only required for chat-related routes */}
         <Route
           path="/chat/*"
           element={
+            // Provide ChatContext to chat-related routes (like ChatSidebar and ChatWindow)
             <ChatProvider>
               <ChatRoutes />
             </ChatProvider>
           }
         />
 
-        {/* Stream-related routes */}
-        <Route path="/stream" element={<Video />} />
-        <Route path="/stream/*" element={<StreamRoutes />} />
-
-        {/* Other routes */}
+        {/* Other user-specific routes */}
         <Route path="/settings" element={<Settings />} />
         <Route path="/profile" element={<Profile />} />
 
-        {/* 404 page */}
+        {/* Catch-all route for undefined paths, showing the NotFound component */}
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   </PrivateRoute>
 );
-
-const StreamRoutes = () => {
-  return (
-    <MediaProvider>
-      <Routes>
-        <Route path="/room/join/:roomId" element={<RequestToJoinRoom />} />
-        <Route
-          path="/room/:roomId"
-          element={
-            <RoomProvider>
-              <Room />
-            </RoomProvider>
-          }
-        />
-      </Routes>
-    </MediaProvider>
-  );
-};
 
 export default WorkspaceRoutes;

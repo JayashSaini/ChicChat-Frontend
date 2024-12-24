@@ -1,7 +1,7 @@
 // Import necessary libraries and types
 import React, { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context";
 
 // Define the PublicRoute component which takes in children as its prop
 const PublicRoute: React.FC<{ children: ReactNode }> = ({ children }) => {

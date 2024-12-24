@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser, logoutUser, registerUser } from "../api";
 import Loader from "../components/Loader";
@@ -26,9 +26,6 @@ const AuthContext = createContext<{
   logout: async () => {},
   updateAvatar: async () => {},
 });
-
-// Create a hook to access the AuthContext
-const useAuth = () => useContext(AuthContext);
 
 // Create a component that provides authentication-related data and functions
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -117,4 +114,4 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 };
 
 // Export the context, provider component, and custom hook
-export { AuthContext, AuthProvider, useAuth };
+export { AuthContext, AuthProvider };

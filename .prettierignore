@@ -1,0 +1,44 @@
+# Ignore build output
+dist/
+
+# Ignore dependency directories
+node_modules/
+
+# Ignore environment files
+.env
+.env.* 
+
+# Ignore logs
+*.log
+
+# Ignore static assets
+public/
+
+# Ignore temporary files
+*.tmp
+*.cache
+
+# Ignore test snapshots
+__snapshots__/
+*.snap
+
+# Ignore lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Ignore IDE settings and configs
+.vscode/
+.idea/
+
+# Ignore version control directories
+.git/
+
+# Ignore compiled or bundled files
+*.min.js
+*.bundle.js
+
+# Ignore Vite-specific files
+.vite/
+*.config.js
+*.config.ts

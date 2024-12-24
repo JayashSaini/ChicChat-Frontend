@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import AddCommentOutlinedIcon from "@mui/icons-material/AddCommentOutlined";
 import ToolTip from "@components/ui/tooltip";
 import { Logo } from "@layout/workspace.layout";
-import { useSidebar } from "@context/SliderContext";
+import { useSidebar, useAuth, useChat } from "@context/index";
 import ChatItem from "./ChatItem";
-import { useChat } from "@context/ChatContext";
+
 import Typing from "./Typing";
 import { getChatObjectMetadata, LocalStorage } from "@utils/index";
-import { useAuth } from "@context/AuthContext";
+
 import AddChatModal from "./AddChatModal";
 
 const ChatSidebar: React.FC = React.memo(() => {
@@ -90,8 +90,7 @@ const ChatSidebar: React.FC = React.memo(() => {
                       ? getChatObjectMetadata(chat, user!)
                           .title?.toLocaleLowerCase()
                           ?.includes(localSearchQuery)
-                      : // If there's no localSearchQuery, include all chats
-                        true
+                      : true
                   )
                   .map((chat) => {
                     return (
