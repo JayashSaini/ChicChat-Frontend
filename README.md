@@ -44,19 +44,5 @@ Name - Jayash Saini <br>
 Contact No. - 9079830785 <br>
 Email ID - jayashysaini7361@gmail.com <br>
 LinkedIn - [Linked](https://www.linkedin.com/in/jayash-saini-371bb0267/)
+
 -
-
-
-Example Socket Workflow
-User A creates a room:
-createRoom → joinRoom
-User B joins the room:
-joinRoom → notifyParticipants
-WebRTC handshake:
-User A sends offer to User B.
-User B responds with answer.
-Both exchange iceCandidate.
-User A toggles video:
-toggleVideo event updates all participants.
-User B leaves:
-leaveRoom → userDisconnected. 
