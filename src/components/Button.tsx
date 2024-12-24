@@ -25,7 +25,7 @@ const Button: React.FC<
         severity === "secondary"
           ? "bg-transparent  disabled:bg-[#ffc107]/60 border dark:border-[#fefefe] border-[#121212]  dark:text-[#fefefe] text-[#121212]"
           : severity === "danger"
-          ? "bg-danger hover:bg-danger/80 disabled:bg-danger/50 text-[#fefefe] "
+          ? "bg-danger hover:bg-danger/80 disabled:bg-danger/50 text-white border border-danger"
           : "bg-buttonBg hover:bg-[#ffc107]/80 disabled:bg-[#ffc107]/60",
         size === "small" ? "text-sm px-3 py-1.5" : "text-base px-4 py-3",
         props.className || ""

@@ -10,7 +10,8 @@
       "@utils/*": ["utils/*"],
       "@assets/*": ["assets/*"],
       "@layout/*": ["layout/*"],
-      "@routes/*": ["routes/*"]
+      "@routes/*": ["routes/*"],
+      "@services/*": ["services/*"]
     },
     "target": "ES2020",
     "useDefineForClassFields": true,

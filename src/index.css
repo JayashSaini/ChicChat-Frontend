@@ -31,8 +31,11 @@
 .light {
   --color-primary: #d4ab2e; /* Amber Yellow */
   --color-background: #f5f5f5; /* Very Light Gray (Main Background) */
-  --color-background-secondary: #e0e0e0; /* Light Gray (Secondary Background) */
-  --color-background-tertiary: #d0d0d0; /* Slightly Darker Gray (Tertiary Background) */
+  --color-background-secondary: #d0d0d0; /* Light Gray (Secondary Background) */
+  --color-background-secondary: #f5f5f5; /* Light Gray (Secondary Background) */
+  --color-background-secondary: #d0d0d0; /* Light Gray (Secondary Background) */
+  --color-background-tertiary: #e0e0e0; /* Slightly Darker Gray (Tertiary Background) */
+  /* Slightly Darker Gray (Tertiary Background) */
   --color-text-primary: #303030; /* Dark Charcoal */
   --color-text-secondary: #666666; /* Gray */
   --color-button-bg: #ffc107; /* Amber Yellow */
@@ -140,4 +143,15 @@
   border: solid var(--color-text-primary); /* Update this to change tick color */
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
+}
+
+@keyframes flyUp {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-100px) scale(1.2);
+  }
 }

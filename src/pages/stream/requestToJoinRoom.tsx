@@ -1,13 +1,20 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useMedia } from "@context/MediaContext";
-import { useRoom } from "@context/RoomContext";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@context/AuthContext";
+import { useSocket } from "@context/SocketContext";
+import { toast } from "sonner";
+import { UserInterface } from "@interfaces/user";
+import Button from "@components/Button";
+import UserTile from "@components/stream/UserTile";
 
 const RequestToJoinRoom: React.FC = () => {
+  // State Management
+  const [joinRoomLoader, setJoinRoomLoader] = useState<boolean>(false);
+
+  // Media context hooks
   const {
     stream,
-    getMedia,
     videoError,
     audioError,
     mediaSupported,
@@ -17,30 +24,57 @@ const RequestToJoinRoom: React.FC = () => {
     isAudioOn,
     isVideoOn,
   } = useMedia();
-  const { joinRoom, joinRoomLoader } = useRoom();
-  const { roomId } = useParams();
-  const { user } = useAuth();
-  const videoRef = useRef<HTMLVideoElement | null>(null); // Create a ref for the video element
 
-  const handleJoinRoom = () => {
-    joinRoom(roomId!, user!);
+  // Auth and socket context hooks
+  const { user } = useAuth();
+  const { socket } = useSocket();
+
+  // Routing and parameters
+  const { roomId } = useParams();
+  const navigate = useNavigate();
+
+  // Handlers for socket events
+  const handleRoomError = (error: { message: string }) => {
+    toast.error(error.message || "An error occurred while joining the room.");
   };
 
-  // Use useEffect to set the srcObject
-  useEffect(() => {
-    getMedia(); // Call getMedia to initiate media access
-    return () => {
-      if (stream) {
-        stream.getTracks().forEach((track) => track.stop()); // Stop the tracks on cleanup
-      }
-    };
-  }, []); // Only run once when the component mounts
+  const roomJoinApprovedHandler = ({ roomId }: { roomId: string }) => {
+    setJoinRoomLoader(false);
+    toast.success("You have successfully joined the room!");
 
+    navigate("/workspace/stream/room/" + roomId);
+  };
+
+  const roomJoinRejectedHandler = ({ message }: { message: string }) => {
+    setJoinRoomLoader(false);
+
+    navigate("/workspace/stream");
+    toast.info(message);
+  };
+
+  // Joining Room Logic
+  const joinRoom = async (roomId: string, user: UserInterface) => {
+    if (!socket) return;
+
+    setJoinRoomLoader(true);
+    socket.emit("adminJoinRequestEvent", { roomId, user, socketId: socket.id });
+  };
+
+  // Effect for initializing socket listeners and media permissions
   useEffect(() => {
-    if (videoRef.current && stream) {
-      videoRef.current.srcObject = stream; // Set the video element's source
-    }
-  }, [stream]); // Run this effect when the stream changes
+    if (!socket) return;
+
+    // Socket event listeners
+    socket.on("room:error", handleRoomError);
+    socket.on("room:join:approved", roomJoinApprovedHandler);
+    socket.on("room:join:rejected", roomJoinRejectedHandler);
+
+    return () => {
+      socket.off("room:join:rejected", roomJoinRejectedHandler);
+      socket.off("room:join:approved", roomJoinApprovedHandler);
+      socket.off("room:error", handleRoomError);
+    };
+  }, [socket]);
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-backgroundSecondary text-textPrimary px-4">
@@ -52,12 +86,15 @@ const RequestToJoinRoom: React.FC = () => {
               {videoError || "Media access not supported on your device"}
             </div>
           ) : (
-            <video
-              ref={videoRef} // Attach the ref to the video element
-              autoPlay
-              muted
-              className="w-full h-full object-cover"
-            ></video>
+            <UserTile
+              avatar={user!?.avatar?.url}
+              isAudioOn={isAudioOn}
+              isVideoOn={isVideoOn}
+              stream={stream}
+              togglePin={() => {}}
+              username={user!?.username}
+              isPin={false}
+            />
           )}
         </div>
 
@@ -80,33 +117,31 @@ const RequestToJoinRoom: React.FC = () => {
 
         {/* Control Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
-          <button
+          <Button
             onClick={toggleVideo}
-            className={`text-sm w-[180px] py-2 rounded-full transition duration-300 ease-in-out ${
-              isVideoOn ? "bg-red-500 text-white" : "bg-[#ffc107cc] text-black"
-            } hover:bg-opacity-90`}
+            severity={isVideoOn ? "secondary" : "danger"}
             disabled={!!videoError || !mediaSupported || permissionDenied}
+            size="small"
           >
-            {isVideoOn ? "Turn Off Video" : "Turn On Video"}
-          </button>
+            {isVideoOn ? "Disable Camera" : "Enable Camera"}
+          </Button>
 
-          <button
+          <Button
             onClick={toggleAudio}
-            className={`text-sm w-[180px] py-2 rounded-full transition duration-300 ease-in-out ${
-              isAudioOn ? "bg-red-500 text-white" : "bg-[#ffc107cc] text-black"
-            } hover:bg-opacity-90`}
+            severity={isAudioOn ? "secondary" : "danger"}
             disabled={audioError || !mediaSupported || permissionDenied}
+            size="small"
           >
-            {isAudioOn ? "Turn Off Audio" : "Turn On Audio"}
-          </button>
+            {isAudioOn ? `Mute Mic` : "Unmute Mic"}
+          </Button>
 
-          <button
-            className="text-sm w-[180px] py-2 rounded-full transition duration-300 ease-in-out bg-sky-600 text-white"
-            onClick={handleJoinRoom}
+          <Button
+            onClick={() => joinRoom(roomId!, user!)}
             disabled={joinRoomLoader}
+            size="small"
           >
             {joinRoomLoader ? "Waiting..." : "Request to Join"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

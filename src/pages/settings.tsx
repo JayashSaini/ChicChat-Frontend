@@ -4,78 +4,111 @@ import { useSidebar } from "@context/SliderContext";
 import { useState } from "react";
 
 const SettingsPage = () => {
-  // State variables for various settings
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [isAccountActive, setIsAccountActive] = useState(true);
   const { theme, toggleTheme } = useSidebar();
 
-  // Functions to handle changes
   const toggleNotifications = () =>
     setNotificationsEnabled(!notificationsEnabled);
 
   return (
     <div className="w-full h-screen bg-background px-3 py-10">
       <div className="max-w-screen-lg w-full mx-auto">
-        <h1 className="md:text-2xl  text-xl font-bold text-textPrimary mb-6">
+        <h1 className="md:text-2xl text-xl font-bold text-textPrimary mb-8">
           Settings
         </h1>
 
-        {/* Unified Settings Container */}
-        <div className="p-6 bg-backgroundSecondary rounded-lg shadow-sm ">
-          {/* Appearance Section (Dark Mode) */}
-          <div className="mb-6">
-            <h2 className="md:text-lg text-base font-medium text-textPrimary mb-3">
-              Appearance
-            </h2>
-            <Select
-              options={[
-                { value: "dark", label: "Dark" },
-                { value: "light", label: "Light" },
-                { value: "system", label: "System" },
-              ]}
-              placeholder="Select Theme"
-              value={theme}
-              onChange={({ value }) => {
-                if (value !== "system" && value !== theme) {
-                  toggleTheme();
-                }
-              }}
-            />
+        <div className="space-y-6">
+          {/* Appearance Settings */}
+          <div className="bg-backgroundSecondary rounded-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-medium text-textPrimary">
+                  Appearance
+                </h2>
+                <p className="text-sm text-textSecondary mt-1">
+                  Customize how the app looks and feels
+                </p>
+              </div>
+            </div>
+            <div className="w-72">
+              <Select
+                options={[
+                  { value: "dark", label: "Dark Theme" },
+                  { value: "light", label: "Light Theme" },
+                  { value: "system", label: "System Default" },
+                ]}
+                placeholder="Choose theme"
+                value={theme}
+                onChange={({ value }) => {
+                  if (value !== "system" && value !== theme) {
+                    toggleTheme();
+                  }
+                }}
+              />
+            </div>
           </div>
 
-          {/* Notifications Settings */}
-          <div className="mb-6">
-            <h2 className="md:text-lg text-base font-medium text-textPrimary mb-3">
-              Notifications
-            </h2>
-            <div className="flex items-center justify-between">
-              <label className="material-checkbox">
-                <input
-                  type="checkbox"
-                  checked={notificationsEnabled} // Use 'checked' instead of 'value' for boolean inputs
-                  onChange={toggleNotifications}
-                />
-                <span className="checkmark"></span>
-                <span className="text-sm">
-                  {" "}
-                  {notificationsEnabled ? "ON" : "OFF"}
-                </span>
-              </label>
+          {/* Notification Settings */}
+          <div className="bg-backgroundSecondary rounded-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-medium text-textPrimary">
+                  Notifications
+                </h2>
+                <p className="text-sm text-textSecondary mt-1">
+                  Manage your notification preferences
+                </p>
+              </div>
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-medium text-textPrimary">
+                    Push Notifications
+                  </h3>
+                  <p className="text-xs text-textSecondary mt-1">
+                    Receive notifications even when you're not using the app
+                  </p>
+                </div>
+                <label className="material-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={notificationsEnabled}
+                    onChange={toggleNotifications}
+                  />
+                  <span className="checkmark"></span>
+                </label>
+              </div>
             </div>
           </div>
 
           {/* Account Settings */}
-          <div className="mb-6">
-            <h2 className="md:text-lg text-base font-medium text-textPrimary mb-3">
-              Account
-            </h2>
-            <Button
-              fullWidth={true}
-              severity={isAccountActive ? "danger" : "primary"}
-              onClick={() => setIsAccountActive((prev) => !prev)}
-            >
-              {isAccountActive ? "Deactivate" : "Activate"}
-            </Button>
+          <div className="bg-backgroundSecondary rounded-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-medium text-textPrimary">
+                  Account Settings
+                </h2>
+                <p className="text-sm text-textSecondary mt-1">
+                  Manage your account status and preferences
+                </p>
+              </div>
+            </div>
+            <div className="space-y-4">
+              <div className="flex flex-col">
+                <h3 className="text-sm font-medium text-textPrimary mb-2">
+                  Account Status
+                </h3>
+                <Button
+                  fullWidth={true}
+                  severity={isAccountActive ? "danger" : "primary"}
+                  onClick={() => setIsAccountActive((prev) => !prev)}
+                >
+                  {isAccountActive ? "Deactivate Account" : "Activate Account"}
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

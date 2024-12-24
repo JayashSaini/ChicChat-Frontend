@@ -104,6 +104,14 @@ const deleteMessage = (chatId: string, messageId: string) => {
   return apiClient.delete(`message/${chatId}/${messageId}`);
 };
 
+const getProfile = () => {
+  return apiClient.get(`/profile`);
+};
+
+const updateProfile = (data: ProfileInterface) => {
+  return apiClient.patch(`/profile`, data);
+};
+
 const createRoom = () => {
   return apiClient.post("/rooms");
 };
@@ -116,14 +124,9 @@ const joinRoom = (data: {
   return apiClient.post("/rooms/join", data);
 };
 
-const updateProfile = (data: ProfileInterface) => {
-  return apiClient.patch(`/profile`, data);
+const getRoomById = (roomId: string) => {
+  return apiClient.get(`/rooms/${roomId}`);
 };
-
-const getProfile = () => {
-  return apiClient.get(`/profile`);
-};
-
 // Export all the API functions
 export {
   addParticipantToGroup,
@@ -147,4 +150,5 @@ export {
   updateProfile,
   getProfile,
   updateAvatar,
+  getRoomById,
 };

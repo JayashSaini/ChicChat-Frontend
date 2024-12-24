@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 
 const Video = () => {
   const [openJoinRoom, setOpenJoinRoom] = useState(false);
-  const [createRoomLoader,setCreateRoomLoader] = useState(false);
+  const [createRoomLoader, setCreateRoomLoader] = useState(false);
 
   const { theme } = useSidebar(); // Get the current theme (light or dark)
   const navigate = useNavigate();
@@ -64,9 +64,7 @@ const Video = () => {
         {/* Buttons Section */}
         <div className="absolute md:top-32 top-20 flex flex-col sm:flex-row gap-4 items-center justify-center mt-10">
           <SecondaryButton
-            onClick={() =>
-              setOpenJoinRoom(true)
-            }
+            onClick={() => setOpenJoinRoom(true)}
             fullWidth={false}
           >
             Join Room

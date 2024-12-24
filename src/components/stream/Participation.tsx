@@ -1,50 +1,28 @@
-import { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import UserTile from "./UserTile";
+import { useMedia } from "@context/MediaContext";
+import { useAuth } from "@context/AuthContext";
+import { ParticipantInterface } from "@interfaces/stream";
 
-const Participation = () => {
-  const [participation, setParticipation] = useState(() =>
-    [
-      {
-        avatar:
-          "https://res.cloudinary.com/dcvb5vgyf/image/upload/c_scale,h_500,w_500/oysy3d5lzxjzjp8am3bi.jpg",
-        isAudioOn: false,
-        isVideoOn: false,
-        stream: false,
-        username: "jayash",
-        isPin: false,
-      },
-      {
-        avatar:
-          "https://res.cloudinary.com/dcvb5vgyf/image/upload/c_scale,h_500,w_500/oysy3d5lzxjzjp8am3bi.jpg",
-        isAudioOn: true,
-        isVideoOn: false,
-        stream: false,
-        username: "tushar",
-        isPin: false,
-      },
-      {
-        avatar:
-          "https://res.cloudinary.com/dcvb5vgyf/image/upload/c_scale,h_500,w_500/oysy3d5lzxjzjp8am3bi.jpg",
-        isAudioOn: false,
-        isVideoOn: false,
-        stream: false,
-        username: "uday",
-        isPin: false,
-      },
-      {
-        avatar:
-          "https://res.cloudinary.com/dcvb5vgyf/image/upload/c_scale,h_500,w_500/oysy3d5lzxjzjp8am3bi.jpg",
-        isAudioOn: false,
-        isVideoOn: false,
-        stream: false,
-        username: "uday",
-        isPin: false,
-      },
-    ].map((user) => ({
-      ...user,
-      background: getRandomTileColor(), // Assign random color to each user
-    }))
+const Participation: React.FC<{}> = ({}) => {
+  const { stream, isAudioOn, isVideoOn, remoteStream } = useMedia();
+  const { user } = useAuth();
+
+  const [participation, setParticipation] = useState<ParticipantInterface[]>(
+    []
   );
+
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  useEffect(() => {
+    if (videoRef.current && remoteStream) {
+      if ("srcObject" in videoRef.current) {
+        videoRef.current.srcObject = remoteStream;
+      } else {
+        // Handle older browsers, though rarely needed
+        console.error("Your browser does not support srcObject.");
+      }
+    }
+  }, [remoteStream]);
 
   const togglePin = (index: number) => {
     // Update the isPin value and then rearrange the list
@@ -63,7 +41,7 @@ const Participation = () => {
 
   return (
     <div
-      className={`w-full h-full bg-backgroundTertiary rounded-xl gap-4 p-4 grid overflow-auto custom-scrollbar  ${
+      className={`w-full h-full bg-backgroundTertiary rounded-xl  gap-4 p-4 grid overflow-auto custom-scrollbar  ${
         participation.length > 1 ? "grid-cols-2" : "grid-cols-1"
       }`}
       style={{
@@ -71,30 +49,41 @@ const Participation = () => {
         gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))", // Ensures dynamic column layout
       }}
     >
-      {participation.map((user, i) => (
+      {/* Render UserTile component for the current user if both user and stream are available */}
+      {user && stream && (
         <UserTile
-          avatar={user.avatar}
-          background={user.background} // Use pre-assigned color
-          isAudioOn={user.isAudioOn}
-          isVideoOn={user.isVideoOn}
-          stream={user.stream}
-          togglePin={() => togglePin(i)}
+          avatar={user.avatar?.url}
+          isAudioOn={isAudioOn}
+          isVideoOn={isVideoOn}
+          stream={stream}
+          togglePin={() => {}}
           username={user.username}
-          key={i}
-          isPin={user.isPin}
+          isPin={true}
         />
-      ))}
+      )}
+
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        controls={false}
+        muted
+        style={{ width: "300px", height: "auto", background: "black" }}
+      />
+
+      {/* {user && peerMediaStream.length > 0 && (
+        <UserTile
+          avatar={user.avatar?.url}
+          isAudioOn={isAudioOn}
+          isVideoOn={isVideoOn}
+          stream={peerMediaStream[0].MediaStream}
+          togglePin={() => {}}
+          username={user.username}
+          isPin={true}
+        />
+      )} */}
     </div>
   );
 };
-
-// Function to get a random tile color
-function getRandomTileColor() {
-  const colors = [
-    "#3AABEA", // Light Blue
-    "#096EE4", // Dark Blue
-  ];
-  return colors[Math.floor(Math.random() * colors.length)];
-}
 
 export default Participation;
