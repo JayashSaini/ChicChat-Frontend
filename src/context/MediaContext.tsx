@@ -54,7 +54,6 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  // Function to request media access (video & audio)
   const initializeMedia = async () => {
     if (navigator.mediaDevices?.getUserMedia) {
       try {
@@ -76,8 +75,16 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Effect to initialize media stream on component mount
   useEffect(() => {
+    // Initialize media stream when component mounts
     initializeMedia();
-  }, []);
+
+    // Cleanup function to stop the media stream on unmount
+    return () => {
+      if (mediaStream) {
+        mediaStream.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, []); // Empty dependency array ensures this runs only once on mount and unmount
 
   // Provide context to children components
   return (
