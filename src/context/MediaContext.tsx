@@ -1,19 +1,21 @@
 import { createContext, useEffect, useState } from "react";
 
 // Defining the context properties type
-interface MediaContextProps {
-  stream: MediaStream | null;
-  media: {
-    mediaError: string | null;
-    isAudioOn: boolean;
-    isVideoOn: boolean;
-    toggleVideo: () => void;
-    toggleAudio: () => void;
-  };
+interface MediaState {
+  error: string | null;
+  audioEnabled: boolean;
+  videoEnabled: boolean;
+  toggleVideo: () => void;
+  toggleAudio: () => void;
+}
+
+interface MediaContextValue {
+  mediaStream: MediaStream | null;
+  mediaState: MediaState;
 }
 
 // Create context with an initial undefined state
-export const MediaContext = createContext<MediaContextProps | undefined>(
+export const MediaContext = createContext<MediaContextValue | undefined>(
   undefined
 );
 
@@ -21,81 +23,77 @@ export const MediaContext = createContext<MediaContextProps | undefined>(
 export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  // State variables to store media stream, errors, and toggle states
-  const [stream, setStream] = useState<MediaStream | null>(null);
-  const [mediaError, setMediaError] = useState<string | null>(null);
-  const [isAudioOn, setIsAudioOn] = useState<boolean>(false);
-  const [isVideoOn, setIsVideoOn] = useState<boolean>(false);
+  const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
 
-  // Function to toggle video track on/off
+  const [error, setError] = useState<string | null>(null);
+  const [audioEnabled, setAudioEnabled] = useState(false);
+  const [videoEnabled, setVideoEnabled] = useState(false);
+
+  // Helper function to toggle tracks and update state
+  const toggleTracks = (
+    tracks: MediaStreamTrack[],
+    setState: (isEnabled: boolean) => void
+  ) => {
+    if (tracks.length === 0) return; // No tracks to toggle
+    const currentEnabledState = tracks[0]?.enabled ?? false;
+    tracks.forEach((track) => (track.enabled = !currentEnabledState));
+    setState(!currentEnabledState);
+  };
+
+  // Toggle video track
   const toggleVideo = () => {
-    if (stream) {
-      // Toggle each video track's enabled state
-      stream.getVideoTracks().forEach((track) => {
-        track.enabled = !track.enabled;
-      });
-
-      // Update the video state based on the previous state
-      setIsVideoOn((prevState) => !prevState);
+    if (mediaStream) {
+      toggleTracks(mediaStream.getVideoTracks(), setVideoEnabled);
     }
   };
 
-  // Function to toggle audio track on/off
+  // Toggle audio track
   const toggleAudio = () => {
-    if (stream) {
-      // Toggle each audio track's enabled state
-      stream.getAudioTracks().forEach((track) => {
-        track.enabled = !track.enabled;
-      });
-
-      // Update the audio state based on the previous state
-      setIsAudioOn((prevState) => !prevState);
+    if (mediaStream) {
+      toggleTracks(mediaStream.getAudioTracks(), setAudioEnabled);
     }
   };
 
   // Function to request media access (video & audio)
-  const getMedia = async () => {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  const initializeMedia = async () => {
+    if (navigator.mediaDevices?.getUserMedia) {
       try {
-        // Request access to both video and audio
-        const mediaStream = await navigator.mediaDevices.getUserMedia({
+        const stream = await navigator.mediaDevices.getUserMedia({
           video: true,
           audio: true,
         });
-
-        // On success, set the stream and reset error
-        setStream(mediaStream);
-        setMediaError(null);
-      } catch (error: any) {
-        // On error, set the media error message
-        setMediaError(error.message);
+        setMediaStream(stream);
+        setError(null);
+      } catch (error) {
+        setError(
+          error instanceof Error ? error.message : "An unknown error occurred."
+        );
       }
     } else {
-      // If the browser doesn't support media access
-      setMediaError("Your device or browser does not support media access.");
+      setError("Your device or browser does not support media access.");
     }
   };
 
   // Effect to initialize media stream on component mount
   useEffect(() => {
-    getMedia(); // Call the function to request media access
-  }, []); // Empty dependency array ensures this runs only once
+    initializeMedia();
+  }, []);
 
   // Provide context to children components
   return (
     <MediaContext.Provider
       value={{
-        stream,
-        media: {
-          mediaError,
-          isAudioOn,
-          isVideoOn,
+        mediaStream,
+        mediaState: {
+          error,
+          audioEnabled,
+          videoEnabled,
           toggleVideo,
           toggleAudio,
         },
       }}
     >
-      {children} {/* Render child components */}
+      {children}
     </MediaContext.Provider>
   );
 };

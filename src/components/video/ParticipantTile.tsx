@@ -1,54 +1,50 @@
 import React, { useEffect, useRef } from "react";
-import { RiPushpin2Fill, RiPushpin2Line, RiMicOffFill } from "@assets/icons";
+import { RiMicOffFill } from "@assets/icons";
 
-const ParticipantTile: React.FC<{
+interface ParticipantTileProps {
   username: string;
   avatar: string;
   isAudioOn: boolean;
   isVideoOn: boolean;
-  stream: MediaStream | null;
-  togglePin: () => void;
-  isPin: boolean;
-}> = ({ username, avatar, isAudioOn, isVideoOn, togglePin, stream, isPin }) => {
-  const videoRef = useRef<HTMLVideoElement | null>(null); // Create a ref for the video element
+  stream?: MediaStream | null;
+}
+
+const ParticipantTile: React.FC<ParticipantTileProps> = ({
+  username,
+  avatar,
+  isAudioOn,
+  isVideoOn,
+  stream,
+}) => {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
     if (videoRef.current && stream) {
-      videoRef.current.srcObject = stream; // Set the video element's source
+      videoRef.current.srcObject = stream;
     }
-  }, [stream]); // Run this effect whenever the stream changes
+  }, [stream]);
 
   return (
-    <div className="relative w-full h-full group rounded-xl  overflow-hidden">
-      {/* Pin Toggle */}
-      <div
-        className="absolute top-5 left-5 text-2xl text-textPrimary cursor-pointer z-10"
-        onClick={togglePin}
-      >
-        {isPin ? (
-          <RiPushpin2Fill />
-        ) : (
-          <RiPushpin2Line className="group-hover:opacity-100 opacity-0 ease-linear duration-100" />
-        )}
-      </div>
-
+    <div className="relative w-full h-full group rounded-xl overflow-hidden">
       {/* Audio Indicator */}
-      <div className="absolute top-5 right-5 text-[#fff] text-xl z-10">
-        {!isAudioOn && <RiMicOffFill />}
-      </div>
+      {!isAudioOn && (
+        <div className="absolute top-5 right-5 text-white text-xl z-10">
+          <RiMicOffFill />
+        </div>
+      )}
 
-      {/* Username Display */}
-      <div className=" z-10 absolute bottom-5 left-5 text-base font-semibold text-[#fff] select-none">
+      {/* Username */}
+      <div className="absolute bottom-5 left-5 text-base font-semibold text-white select-none z-10">
         {username}
       </div>
 
-      {/* Video or Avatar Display */}
+      {/* Video or Avatar */}
       <div className="w-full h-full bg-backgroundSecondary flex justify-center items-center overflow-hidden">
         <video
-          ref={videoRef} // Attach the ref to the video element
+          ref={videoRef}
           autoPlay
-          muted={isAudioOn ? false : true}
-          className={`w-full ${isVideoOn ? "block" : "hidden"}`} // Show or hide video based on `isVideoOn`
+          muted={!isAudioOn}
+          className={`w-full ${isVideoOn ? "block" : "hidden"}`}
         ></video>
         {!isVideoOn && (
           <div className="bg-[#096fe4bb] absolute flex items-center justify-center w-full h-full">
@@ -63,5 +59,19 @@ const ParticipantTile: React.FC<{
     </div>
   );
 };
+
+{
+  /* Pin Toggle */
+}
+//  <div
+//  className="absolute top-5 left-5 text-2xl text-textPrimary cursor-pointer z-10"
+//  onClick={togglePin}
+// >
+//  {isPin ? (
+//    <RiPushpin2Fill />
+//  ) : (
+//    <RiPushpin2Line className="group-hover:opacity-100 opacity-0 ease-linear duration-100" />
+//  )}
+// </div>
 
 export default ParticipantTile;

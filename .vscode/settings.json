@@ -1,0 +1,45 @@
+{
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"prettier.requireConfig": true,
+	"eslint.enable": true,
+	"eslint.run": "onSave",
+	"eslint.validate": [
+	  "javascript",
+	  "javascriptreact",
+	  "typescript",
+	  "typescriptreact",
+	  "json"
+	],
+	"files.autoSave": "onWindowChange",
+	"editor.autoClosingBrackets": "always",
+	"editor.autoClosingQuotes": "always",
+	"typescript.validate.enable": true,
+	"javascript.validate.enable": true,
+	"git.enableSmartCommit": true,
+	"git.autofetch": true,
+	"git.confirmSync": false,
+	"editor.snippetSuggestions": "inline",
+	"files.autoSaveDelay": 1000,
+	"files.associations": {
+	  "*.js": "javascript",
+	  "*.ts": "typescript",
+	  "*.jsx": "javascriptreact",
+	  "*.tsx": "typescriptreact"
+	},
+	"terminal.integrated.fontFamily": "monospace",
+	"terminal.integrated.fontSize": 14,
+	"cSpell.words": ["sonner", "MERN", "TypeScript", "NodeJs"],
+	
+	// Tab and indentation settings
+	"editor.tabSize": 2,  // Set the number of spaces per tab
+	"editor.insertSpaces": true,  // Use spaces instead of tabs for indentation
+	"editor.detectIndentation": false,  // Disable automatic indentation detection (use the above settings)
+	
+  // Prettier settings
+	"prettier.singleQuote": false,  // Use double quotes instead of single quotes
+  "prettier.tabWidth": 2,
+  "prettier.semi": true,
+  "prettier.trailingComma" : "es5",
+  "prettier.bracketSpacing": true
+}

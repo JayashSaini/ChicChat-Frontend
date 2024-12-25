@@ -1,12 +1,14 @@
+import { useState } from "react";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+
 import SecondaryButton from "@components/SecondaryButton";
 import { SparklesCore } from "@components/ui/spark";
 import JoinRoomModel from "@components/video/JoinRoomModel";
+
 import { useSidebar } from "@context/index";
-import { useState } from "react";
-import { toast } from "sonner";
 import { requestHandler } from "@utils/index";
 import { createRoom } from "@api/index";
-import { useNavigate } from "react-router-dom";
 
 const Video = () => {
   const [openJoinRoom, setOpenJoinRoom] = useState(false); // State to control Join Room Modal

@@ -4,15 +4,16 @@ import { useSocket, useAuth } from "@context/index";
 import { toast } from "sonner";
 import { UserInterface } from "@interfaces/user";
 import Button from "@components/Button";
-import UserTile from "@components/video/ParticipantTile";
+import ParticipantTile from "@components/video/ParticipantTile";
 import { useMedia } from "@context/index";
 
 const RoomJoinRequest: React.FC = () => {
   // State to manage the loading state while waiting for room join approval
   const [joinRoomLoader, setJoinRoomLoader] = useState<boolean>(false);
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
   // Media context hooks for stream and media features
-  const { stream, media } = useMedia();
+  const { mediaStream, mediaState } = useMedia();
 
   // Auth and socket context hooks for user info and socket connection
   const { user } = useAuth();
@@ -25,6 +26,8 @@ const RoomJoinRequest: React.FC = () => {
   // Handle socket events for room join errors
   const handleRoomError = (error: { message: string }) => {
     toast.error(error.message || "An error occurred while joining the room.");
+
+    navigate("/workspace/video");
   };
 
   // Handle successful room join approval
@@ -33,14 +36,14 @@ const RoomJoinRequest: React.FC = () => {
     toast.success("You have successfully joined the room!");
 
     // Navigate to the room after successful join
-    navigate("/workspace/stream/room/" + roomId);
+    navigate("/workspace/video/room/" + roomId);
   };
 
   // Handle room join rejection, display a message and navigate away
   const roomJoinRejectedHandler = ({ message }: { message: string }) => {
     setJoinRoomLoader(false);
-    navigate("/workspace/stream");
     toast.info(message);
+    navigate("/workspace/video");
   };
 
   // Function to emit room join request to the server
@@ -49,6 +52,16 @@ const RoomJoinRequest: React.FC = () => {
 
     setJoinRoomLoader(true);
     socket.emit("adminJoinRequestEvent", { roomId, user, socketId: socket.id });
+
+    const id = setTimeout(() => {
+      toast.info(
+        "Admin is taking longer than expected. Please try again later."
+      );
+      navigate("/workspace/video");
+    }, 10000);
+
+    // Store timeoutId in state
+    setTimeoutId(id);
   };
 
   // Effect to setup socket listeners and clean up on unmount
@@ -69,26 +82,33 @@ const RoomJoinRequest: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
 
+  // Effect to clean up timeout when component unmounts or when timeoutId changes
+  useEffect(() => {
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId); // Cleanup timeout on unmount or change
+      }
+    };
+  }, [timeoutId]);
+
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-backgroundSecondary text-textPrimary px-4">
       <div className="relative w-full max-w-3xl rounded-lg">
         {/* Video Container */}
         <div className="max-w-screen-md w-full h-[500px] bg-backgroundTertiary rounded-lg overflow-hidden flex items-center justify-center">
-          {media.mediaError ? (
+          {mediaState.error ? (
             <div className="text-center text-xl text-error h-full flex items-center justify-center">
-              {media.mediaError || "Media access not supported on your device"}
+              {mediaState.error || "Media access not supported on your device"}
             </div>
           ) : (
             user &&
             user?.avatar && (
-              <UserTile
+              <ParticipantTile
                 avatar={user?.avatar?.url}
-                isAudioOn={media.isAudioOn}
-                isVideoOn={media.isVideoOn}
-                stream={stream}
-                togglePin={() => {}}
+                isAudioOn={mediaState.audioEnabled}
+                isVideoOn={mediaState.videoEnabled}
+                stream={mediaStream}
                 username={user?.username}
-                isPin={false}
               />
             )
           )}
@@ -104,21 +124,21 @@ const RoomJoinRequest: React.FC = () => {
         {/* Control Buttons for video and audio */}
         <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
           <Button
-            onClick={media.toggleVideo}
-            severity={media.isVideoOn ? "secondary" : "danger"}
-            disabled={media.mediaError ? true : false}
+            onClick={mediaState.toggleVideo}
+            severity={mediaState.videoEnabled ? "secondary" : "danger"}
+            disabled={mediaState.error ? true : false}
             size="small"
           >
-            {media.isVideoOn ? "Disable Camera" : "Enable Camera"}
+            {mediaState.videoEnabled ? "Disable Camera" : "Enable Camera"}
           </Button>
 
           <Button
-            onClick={media.toggleAudio}
-            severity={media.isAudioOn ? "secondary" : "danger"}
-            disabled={media.mediaError ? true : false}
+            onClick={mediaState.toggleAudio}
+            severity={mediaState.audioEnabled ? "secondary" : "danger"}
+            disabled={mediaState.error ? true : false}
             size="small"
           >
-            {media.isAudioOn ? `Mute Mic` : "Unmute Mic"}
+            {mediaState.audioEnabled ? `Mute Mic` : "Unmute Mic"}
           </Button>
 
           <Button

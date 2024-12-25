@@ -4,11 +4,11 @@ import Workspace from "@layout/workspace.layout";
 import PrivateRoute from "@components/PrivateRoute";
 import ChatRoutes from "./chat.routes";
 import NotFound from "@components/NotFound";
-import { ChatProvider } from "@context/ChatContext";
 
 import Settings from "@pages/settings";
 import Profile from "@pages/profile";
 import Video from "@pages/video/video";
+import RoomRoutes from "./room.routes";
 
 const WorkspaceRoutes: React.FC = () => (
   // Wrap all routes with PrivateRoute for authentication protection
@@ -16,17 +16,11 @@ const WorkspaceRoutes: React.FC = () => (
     <Routes>
       <Route path="/" element={<Workspace />}>
         {/* ChatContext is only required for chat-related routes */}
-        <Route
-          path="/chat/*"
-          element={
-            // Provide ChatContext to chat-related routes (like ChatSidebar and ChatWindow)
-            <ChatProvider>
-              <ChatRoutes />
-            </ChatProvider>
-          }
-        />
+        <Route path="/chat/*" element={<ChatRoutes />} />
 
         <Route path="/video" element={<Video />} />
+
+        <Route path="/video/room/*" element={<RoomRoutes />} />
 
         {/* Other user-specific routes */}
         <Route path="/settings" element={<Settings />} />
