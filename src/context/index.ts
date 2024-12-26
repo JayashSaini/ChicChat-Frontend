@@ -5,6 +5,7 @@ import { ChatContext } from "./ChatContext"; // Context for chat-related data
 import { SidebarContext } from "./SliderContext"; // Context for sidebar state management
 import { SocketContext } from "./SocketContext"; // Context for managing the socket connection
 import { MediaContext } from "./MediaContext";
+import { RoomContext } from "./RoomContext";
 
 // Custom hook to access the authentication context
 export const useAuth = () => {
@@ -42,6 +43,9 @@ export const useMedia = () => {
   // Returning the context value if valid
   return context;
 };
+
+// Custom hook to access the room context
+export const useRoom = () => useContext(RoomContext);
 
 // Custom hook to access the socket instance from the context
 export const useSocket = () => useContext(SocketContext);

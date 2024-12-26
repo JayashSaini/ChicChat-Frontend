@@ -141,6 +141,37 @@
   transform: rotate(45deg);
 }
 
+/* Participants Tile Layout */
+
+/* Style for child elements */
+.participants {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.tile-1 {
+  width: 100%;
+  height: 100%;
+}
+.tile-2 {
+  width: 49.5%;
+  height: 400px;
+}
+.tile-3 {
+  width: 49.5%;
+  height: 400px;
+  overflow: hidden;
+}
+.tile-4 {
+  width: 33.33%;
+  height: 300px;
+  overflow: hidden;
+}
+
 @keyframes flyUp {
   from {
     opacity: 1;

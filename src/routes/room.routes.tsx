@@ -4,6 +4,9 @@ import { Route, Routes } from "react-router-dom";
 import NotFound from "@components/NotFound";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { MediaProvider } from "@context/MediaContext";
+import Room from "@pages/video/room";
+import Loader from "@components/Loader";
+import { RoomProvider } from "@context/RoomContext";
 
 // Lazy load components for chat sidebar and chat window
 const RoomJoinRequest = React.lazy(
@@ -21,8 +24,23 @@ const RoomRoutes: React.FC = () => {
             <ErrorBoundary
               fallback={<div>🥲 Error occur in Room Join Request Page.</div>}
             >
-              <Suspense fallback={<div>Loading Room Data...</div>}>
+              <Suspense fallback={<Loader />}>
                 <RoomJoinRequest />
+              </Suspense>
+            </ErrorBoundary>
+          }
+        />
+
+        <Route
+          path="/:roomId"
+          element={
+            <ErrorBoundary
+              fallback={<div>🥲 Error occur in Room Join Request Page.</div>}
+            >
+              <Suspense fallback={<Loader />}>
+                <RoomProvider>
+                  <Room />
+                </RoomProvider>
               </Suspense>
             </ErrorBoundary>
           }

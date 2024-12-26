@@ -25,7 +25,7 @@ const ParticipantTile: React.FC<ParticipantTileProps> = ({
   }, [stream]);
 
   return (
-    <div className="relative w-full h-full group rounded-xl overflow-hidden">
+    <div className="w-full h-full  relative group rounded-xl overflow-hidden ">
       {/* Audio Indicator */}
       {!isAudioOn && (
         <div className="absolute top-5 right-5 text-white text-xl z-10">
@@ -39,12 +39,12 @@ const ParticipantTile: React.FC<ParticipantTileProps> = ({
       </div>
 
       {/* Video or Avatar */}
-      <div className="w-full h-full bg-backgroundSecondary flex justify-center items-center overflow-hidden">
+      <div className="w-full h-full bg-backgroundSecondary flex justify-center items-center overflow-hidden ">
         <video
           ref={videoRef}
           autoPlay
           muted={!isAudioOn}
-          className={`w-full ${isVideoOn ? "block" : "hidden"}`}
+          className={`w-full ${isVideoOn ? "block" : "hidden"} rounded-md`}
         ></video>
         {!isVideoOn && (
           <div className="bg-[#096fe4bb] absolute flex items-center justify-center w-full h-full">
