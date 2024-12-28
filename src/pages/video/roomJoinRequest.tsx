@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { UserInterface } from "@interfaces/user";
 import Button from "@components/Button";
 import ParticipantTile from "@components/video/ParticipantTile";
-import { useMedia } from "@context/index";
+import { useRoom } from "@context/index";
 
 const RoomJoinRequest: React.FC = () => {
   // State to manage the loading state while waiting for room join approval
@@ -13,7 +13,7 @@ const RoomJoinRequest: React.FC = () => {
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
   // Media context hooks for stream and media features
-  const { mediaStream, mediaState } = useMedia();
+  const { mediaStream, mediaState } = useRoom();
 
   // Auth and socket context hooks for user info and socket connection
   const { user } = useAuth();
@@ -43,6 +43,7 @@ const RoomJoinRequest: React.FC = () => {
   const roomJoinRejectedHandler = ({ message }: { message: string }) => {
     setJoinRoomLoader(false);
     toast.info(message);
+
     navigate("/workspace/video");
   };
 
@@ -51,7 +52,7 @@ const RoomJoinRequest: React.FC = () => {
     if (!socket) return;
 
     setJoinRoomLoader(true);
-    socket.emit("adminJoinRequestEvent", { roomId, user, socketId: socket.id });
+    socket.emit("admin:join-request", { roomId, user, socketId: socket.id });
 
     const id = setTimeout(() => {
       toast.info(

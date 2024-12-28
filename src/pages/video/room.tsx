@@ -6,38 +6,44 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getRoomById } from "@api/index";
 import { requestHandler } from "@utils/index";
 import { Room as RoomInterface } from "@interfaces/stream";
-import { useAuth, useMedia, useRoom, useSocket } from "@context/index";
+import { useAuth, useRoom, useSocket } from "@context/index";
 import Loader from "@components/Loader";
 import Participants from "@components/video/Participants";
 import People from "@components/video/People";
 import ChatBox from "@components/video/Chatbox";
 import ToolTip from "@components/ui/tooltip";
+import ConfirmationModal from "@components/ConfirmationModel";
 import {
+  RiPhoneFill,
+  RiVideoOnLine,
+  RiVideoOffLine,
   RiMicLine,
   RiMicOffLine,
-  RiPhoneFill,
-  RiVideoOffLine,
-  RiVideoOnLine,
-} from "react-icons/ri";
-import { LuScreenShare } from "react-icons/lu";
-import { HiHandRaised, HiOutlineHandRaised } from "react-icons/hi2";
+  LuScreenShare,
+  HiOutlineHandRaised,
+  HiHandRaised,
+  BsThreeDotsVertical,
+  MdOutlinePeopleAlt,
+  BsChatLeftText,
+} from "@assets/icons";
 import ReactionPicker from "@components/ui/reactionPicker";
-import { BsChatLeftText, BsThreeDotsVertical } from "react-icons/bs";
-import { MdOutlinePeopleAlt } from "react-icons/md";
+import { UserInterface } from "@interfaces/user";
 
 const Room = () => {
   const [isLoading, setIsLoading] = useState(true);
 
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility state for user joining requests
   const [isPeopleModalOpen, setIsPeopleModalOpen] = useState(false); // Modal visibility state for people list
   const [isChatBoxModalOpen, setIsChatBoxModalOpen] = useState(false); // Modal visibility state for chatbox
 
   const [isHandRaised, setIsHandRaised] = useState(false); // State to manage hand raise
+  const [joiningRequestUser, setJoiningRequestUser] =
+    useState<UserInterface | null>(null); // User waiting for approval
 
   const { roomId } = useParams<{ roomId: string }>();
   const navigate = useNavigate();
 
-  const { setRoomHandler } = useRoom();
-  const { mediaState } = useMedia();
+  const { setRoomHandler, setParticipantsHandler, mediaState } = useRoom();
   const { user } = useAuth();
   const { socket } = useSocket();
 
@@ -46,11 +52,17 @@ const Room = () => {
       async () => await getRoomById(roomId),
       setIsLoading,
       (res: any) => {
-        const { room }: { room: RoomInterface } = res.data;
+        const {
+          room,
+          participants,
+        }: { room: RoomInterface; participants: UserInterface[] } = res.data;
         if (!room.isActive) {
           toast.error("This room is no longer active.");
           navigate("/workspace/video");
-        } else setRoomHandler(room);
+        } else {
+          setRoomHandler(room);
+          setParticipantsHandler(participants);
+        }
       },
       (e: string) => {
         toast.error(e);
@@ -59,9 +71,46 @@ const Room = () => {
     );
   };
 
+  // Handle confirmation of new user joining (admin approval)
+  const handleConfirm = () => {
+    socket?.emit("admin:approve-user", {
+      roomId,
+      user: joiningRequestUser,
+    });
+    setIsModalOpen(false); // Close modal after confirming
+    setJoiningRequestUser(null); // Reset the joining user
+  };
+
+  // Handle rejection of new user joining (admin rejection)
+  const handleClose = () => {
+    socket?.emit("admin:reject-user", {
+      userId: joiningRequestUser?._id,
+    });
+    setIsModalOpen(false); // Close modal after rejection
+    setJoiningRequestUser(null); // Reset the joining user
+  };
+
+  // Handle room joining request from a user
+  const handleRoomJoiningRequest = ({ user }: { user: UserInterface }) => {
+    setJoiningRequestUser(user); // Set the user requesting to join
+    setIsModalOpen(true); // Open the confirmation modal
+  };
+
   useEffect(() => {
     if (roomId) fetchRoomDetails(roomId);
   }, [roomId]);
+
+  // Setup socket events on component mount and clean up on unmount
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("admin:user-join-request", handleRoomJoiningRequest); // Listen for join requests
+
+    // Cleanup socket event listener on unmount
+    return () => {
+      socket.off("admin:user-join-request", handleRoomJoiningRequest);
+    };
+  }, [socket]);
 
   return isLoading ? (
     <Loader />
@@ -170,6 +219,16 @@ const Room = () => {
           </div>
         </div>
       </div>
+      {/* Confirmation modal for join request */}
+      {isModalOpen && (
+        <ConfirmationModal
+          isOpen={isModalOpen}
+          onClose={handleClose}
+          onConfirm={handleConfirm}
+          title="Join Request Confirmation"
+          message={`${joiningRequestUser?.username} has requested to join this room. Do you want to allow them to join?`}
+        />
+      )}
     </div>
   );
 };

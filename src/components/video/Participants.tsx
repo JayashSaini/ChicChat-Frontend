@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import ParticipantTile from "./ParticipantTile";
-import { useMedia, useAuth } from "@context/index";
+import { useAuth, useRoom } from "@context/index";
 
 const Participants: React.FC = () => {
-  const { mediaStream, mediaState } = useMedia();
+  const { mediaStream, mediaState } = useRoom();
   const { user } = useAuth();
   const [gridClass, setGridClass] = useState<
     "tile-1" | "tile-2" | "tile-3" | "tile-4"
