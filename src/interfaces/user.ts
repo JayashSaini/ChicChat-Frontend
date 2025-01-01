@@ -9,6 +9,7 @@ export interface UserInterface {
   email: string;
   createdAt: string;
   updatedAt: string;
+  remoteStream?: MediaStream | null;
 }
 
 export interface ProfileInterface {

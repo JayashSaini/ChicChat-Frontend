@@ -11,13 +11,15 @@ import {
   isImageFile,
   requestHandler,
 } from "@utils/index";
-import { useChat, useAuth, useSidebar, useSocket } from "@context/index";
+import { useChat, useAuth, useSidebar } from "@context/index";
 import Typing from "@components/chat/Typing";
 import { deleteMessage, sendMessage } from "@api/index";
 import { ChatMessageInterface } from "@interfaces/chat";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { RootState } from "@redux/store";
 
 // Sockets Events
 const TYPING_EVENT = "typing";
@@ -44,7 +46,7 @@ const ChatWindow: React.FC = React.memo(() => {
     updateChatLastMessage,
   } = useChat();
   const { user } = useAuth();
-  const { socket } = useSocket();
+  const { socket } = useSelector((state: RootState) => state.socket);
   const { isMobileScreen } = useSidebar();
 
   // To keep track of the setTimeout function

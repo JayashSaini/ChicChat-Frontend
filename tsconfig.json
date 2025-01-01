@@ -11,7 +11,8 @@
       "@assets/*": ["assets/*"],
       "@layout/*": ["layout/*"],
       "@routes/*": ["routes/*"],
-      "@services/*": ["services/*"]
+      "@services/*": ["services/*"],
+      "@redux/*": ["redux/*"]
     },
     "target": "ES2020",
     "useDefineForClassFields": true,

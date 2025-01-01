@@ -6,7 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getRoomById } from "@api/index";
 import { requestHandler } from "@utils/index";
 import { Room as RoomInterface } from "@interfaces/stream";
-import { useAuth, useRoom, useSocket } from "@context/index";
+import { useAuth } from "@context/index";
 import Loader from "@components/Loader";
 import Participants from "@components/video/Participants";
 import People from "@components/video/People";
@@ -28,25 +28,40 @@ import {
 } from "@assets/icons";
 import ReactionPicker from "@components/ui/reactionPicker";
 import { UserInterface } from "@interfaces/user";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@redux/store";
+import { setParticipants, setRoom } from "@redux/slice/room.slice";
+import { toggleAudio, toggleVideo } from "@redux/slice/media.slice";
+import {
+  handleAnswer,
+  handleIceCandidate,
+  handleUserJoined,
+  handleUserLeave,
+  offer,
+  updateParticipantMedia,
+} from "@redux/thunk/room.thunk";
+import { initializeMedia } from "@redux/thunk/media.thunk";
 
 const Room = () => {
   const [isLoading, setIsLoading] = useState(true);
-
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility state for user joining requests
   const [isPeopleModalOpen, setIsPeopleModalOpen] = useState(false); // Modal visibility state for people list
   const [isChatBoxModalOpen, setIsChatBoxModalOpen] = useState(false); // Modal visibility state for chatbox
-
   const [isHandRaised, setIsHandRaised] = useState(false); // State to manage hand raise
   const [joiningRequestUser, setJoiningRequestUser] =
     useState<UserInterface | null>(null); // User waiting for approval
 
+  // Hooks for route and state management
   const { roomId } = useParams<{ roomId: string }>();
-  const navigate = useNavigate();
-
-  const { setRoomHandler, setParticipantsHandler, mediaState } = useRoom();
   const { user } = useAuth();
-  const { socket } = useSocket();
+  const { socket } = useSelector((state: RootState) => state.socket);
+  const { mediaState, mediaStream } = useSelector(
+    (state: RootState) => state.media
+  );
+  const navigate = useNavigate();
+  const dispatch: AppDispatch = useDispatch();
 
+  // Fetch room details by roomId.
   const fetchRoomDetails = (roomId: string) => {
     requestHandler(
       async () => await getRoomById(roomId),
@@ -56,12 +71,29 @@ const Room = () => {
           room,
           participants,
         }: { room: RoomInterface; participants: UserInterface[] } = res.data;
+
         if (!room.isActive) {
           toast.error("This room is no longer active.");
           navigate("/workspace/video");
         } else {
-          setRoomHandler(room);
-          setParticipantsHandler(participants);
+          dispatch(setRoom(room));
+          dispatch(
+            setParticipants(
+              participants.map((user) => ({
+                _id: user?._id.toString(),
+                user: user,
+                isPin: false,
+                stream: null,
+                mediaState: {
+                  audioEnabled: false,
+                  videoEnabled: false,
+                },
+              }))
+            )
+          );
+          // Notify Other User that new user joined
+          console.log("notification");
+          socket?.emit("participant:join:notify", room?.roomId, user);
         }
       },
       (e: string) => {
@@ -71,46 +103,117 @@ const Room = () => {
     );
   };
 
-  // Handle confirmation of new user joining (admin approval)
+  // Handle confirmation of new user joining (admin approval).
   const handleConfirm = () => {
     socket?.emit("admin:approve-user", {
       roomId,
       user: joiningRequestUser,
     });
+
     setIsModalOpen(false); // Close modal after confirming
     setJoiningRequestUser(null); // Reset the joining user
   };
 
-  // Handle rejection of new user joining (admin rejection)
+  //  Handle rejection of new user joining (admin rejection).
   const handleClose = () => {
     socket?.emit("admin:reject-user", {
       userId: joiningRequestUser?._id,
     });
+
     setIsModalOpen(false); // Close modal after rejection
     setJoiningRequestUser(null); // Reset the joining user
   };
 
-  // Handle room joining request from a user
+  // Handle room joining request from a user.
   const handleRoomJoiningRequest = ({ user }: { user: UserInterface }) => {
     setJoiningRequestUser(user); // Set the user requesting to join
     setIsModalOpen(true); // Open the confirmation modal
   };
 
+  // Fetch room details whenever the roomId changes.
   useEffect(() => {
     if (roomId) fetchRoomDetails(roomId);
   }, [roomId]);
 
-  // Setup socket events on component mount and clean up on unmount
+  // Update media state on the server whenever mediaState changes.
+  useEffect(() => {
+    socket?.emit("user:media-update", roomId, user?._id.toString(), {
+      audioEnabled: mediaState.audioEnabled,
+      videoEnabled: mediaState.videoEnabled,
+    });
+  }, [roomId, mediaState, user, socket]);
+
+  //  Set up socket events and clean up on component unmount.
   useEffect(() => {
     if (!socket) return;
 
-    socket.on("admin:user-join-request", handleRoomJoiningRequest); // Listen for join requests
+    //  Handle page unload and clean up resources.
+    const handleUnload = () => {
+      socket.emit("leave-room", {
+        roomId: roomId,
+        user: user,
+      });
+      toast.info("You are leaving the room. Please rejoin if needed.");
+      navigate("/workspace/video");
+    };
 
-    // Cleanup socket event listener on unmount
+    // Listen for join requests
+    socket.on("admin:user-join-request", handleRoomJoiningRequest);
+    socket.on(
+      "user:joined",
+      (credentials: { user: UserInterface; socketId: string }) => {
+        const myUserId: string = user?._id?.toString() || " ";
+        dispatch(handleUserJoined({ ...credentials, myUserId }));
+      }
+    );
+    socket.on("user:leave", (d) => dispatch(handleUserLeave(d)));
+    socket.on("offer", (offerData, socketId, credentials) => {
+      const myUserId: string = user?._id.toString() || " ";
+      dispatch(
+        offer({ offer: offerData, socketId, credentials, myUserId: myUserId })
+      );
+    });
+    socket.on("answer", (answer, socketId, { userId, mediaState }) =>
+      dispatch(handleAnswer({ answer, from: socketId, userId, mediaState }))
+    );
+    socket.on("ice-candidate", (candidate, socketId) =>
+      dispatch(handleIceCandidate({ candidate, from: socketId }))
+    );
+    socket.on("participant:media-update", (userId, mediaState) =>
+      dispatch(updateParticipantMedia({ userId, mediaState }))
+    );
+
+    // Add event listeners for beforeunload and unload
+    window.addEventListener("beforeunload", handleUnload);
+    window.addEventListener("unload", handleUnload);
+
+    // Cleanup on unmount
     return () => {
       socket.off("admin:user-join-request", handleRoomJoiningRequest);
+      socket.off("user:joined");
+      socket.off("user:leave");
+      socket.off("offer");
+      socket.off("answer");
+      socket.off("ice-candidate");
+      socket.off("participant:media-update");
+
+      window.removeEventListener("beforeunload", handleUnload);
+      window.removeEventListener("unload", handleUnload);
+
+      if (roomId) {
+        socket.emit("leave-room", {
+          roomId: roomId,
+          user: user,
+        });
+      }
     };
-  }, [socket]);
+  }, [socket, roomId]);
+
+  useEffect(() => {
+    if (!mediaStream) {
+      dispatch(initializeMedia());
+    }
+  }, [mediaStream]);
 
   return isLoading ? (
     <Loader />
@@ -155,10 +258,20 @@ const Room = () => {
 
           {/* Control buttons (Video, Audio, Share, etc.) */}
           <div className="w-[60%] flex gap-2 items-center justify-evenly text-textPrimary text-2xl">
-            <div role="button" onClick={mediaState.toggleVideo}>
+            <div
+              role="button"
+              onClick={() => {
+                dispatch(toggleVideo());
+              }}
+            >
               {mediaState.videoEnabled ? <RiVideoOnLine /> : <RiVideoOffLine />}
             </div>
-            <div role="button" onClick={mediaState.toggleAudio}>
+            <div
+              role="button"
+              onClick={() => {
+                dispatch(toggleAudio());
+              }}
+            >
               {mediaState.audioEnabled ? <RiMicLine /> : <RiMicOffLine />}
             </div>
             <div role="button">

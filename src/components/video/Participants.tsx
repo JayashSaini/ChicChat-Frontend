@@ -1,25 +1,18 @@
 import React, { useEffect, useState } from "react";
 import ParticipantTile from "./ParticipantTile";
-import { useAuth, useRoom } from "@context/index";
+import { useAuth } from "@context/index";
+import { useSelector } from "react-redux";
+import { RootState } from "@redux/store";
 
 const Participants: React.FC = () => {
-  const { mediaStream, mediaState } = useRoom();
+  const { mediaStream, mediaState } = useSelector(
+    (state: RootState) => state.media
+  );
+  const { participants } = useSelector((state: RootState) => state.room);
   const { user } = useAuth();
   const [gridClass, setGridClass] = useState<
     "tile-1" | "tile-2" | "tile-3" | "tile-4"
   >("tile-1");
-
-  // Construct the participants array dynamically
-  const participants =
-    user && mediaStream
-      ? Array.from({ length: 1 }, () => ({
-          avatar: user.avatar?.url,
-          isAudioOn: mediaState.audioEnabled,
-          isVideoOn: mediaState.videoEnabled,
-          stream: mediaStream,
-          username: user.username,
-        }))
-      : [];
 
   useEffect(() => {
     // Adjust grid layout based on the number of participants
@@ -32,35 +25,36 @@ const Participants: React.FC = () => {
     } else {
       setGridClass("tile-4");
     }
-
+    console.log("participants check : ", participants);
     // Remove the grid layout class when the participants list changes
-  }, [user, participants]);
+  }, [participants]);
 
   return (
     <div
       className={`w-full h-full bg-backgroundTertiary  participants rounded-xl p-4 overflow-auto custom-scrollbar `}
     >
-      {/* Participants Tile component for the current user if both user and stream are available */}
-      {user && mediaState && (
+      {user && (
         <div className={`${gridClass} rounded-xl`}>
           <ParticipantTile
-            avatar={user.avatar?.url}
+            avatar={user?.avatar?.url}
             isAudioOn={mediaState.audioEnabled}
             isVideoOn={mediaState.videoEnabled}
             stream={mediaStream}
-            username={user.username}
+            username={user?.username}
+            isMine={true}
           />
         </div>
       )}
+      {/* Participants Tile component for the current user if both user and stream are available */}
       {participants &&
         participants.map((participant, idx) => (
           <div key={idx} className={`${gridClass} rounded-xl`}>
             <ParticipantTile
-              avatar={participant.avatar}
-              isAudioOn={participant.isAudioOn}
-              isVideoOn={participant.isVideoOn}
-              stream={participant.stream}
-              username={participant.username}
+              avatar={participant?.user?.avatar?.url}
+              stream={participant?.stream}
+              username={participant?.user?.username}
+              isAudioOn={participant?.mediaState.audioEnabled}
+              isVideoOn={participant?.mediaState.videoEnabled}
             />
           </div>
         ))}

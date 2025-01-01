@@ -7,6 +7,7 @@ interface ParticipantTileProps {
   isAudioOn: boolean;
   isVideoOn: boolean;
   stream?: MediaStream | null;
+  isMine?: boolean;
 }
 
 const ParticipantTile: React.FC<ParticipantTileProps> = ({
@@ -15,6 +16,7 @@ const ParticipantTile: React.FC<ParticipantTileProps> = ({
   isAudioOn,
   isVideoOn,
   stream,
+  isMine = false,
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -28,7 +30,7 @@ const ParticipantTile: React.FC<ParticipantTileProps> = ({
     <div className="w-full h-full  relative group rounded-xl overflow-hidden ">
       {/* Audio Indicator */}
       {!isAudioOn && (
-        <div className="absolute top-5 right-5 text-white text-xl z-10">
+        <div className="absolute top-5 right-5 text-white text-xl z-20">
           <RiMicOffFill />
         </div>
       )}
@@ -43,7 +45,7 @@ const ParticipantTile: React.FC<ParticipantTileProps> = ({
         <video
           ref={videoRef}
           autoPlay
-          muted={!isAudioOn}
+          muted={isMine ? true : !isAudioOn}
           className={`w-full ${isVideoOn ? "block" : "hidden"} rounded-md`}
         ></video>
         {!isVideoOn && (

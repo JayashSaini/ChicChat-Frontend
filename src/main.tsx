@@ -3,17 +3,18 @@ import App from "./App.tsx";
 import "./index.css";
 import { AuthProvider } from "./context/AuthContext.tsx";
 import { BrowserRouter } from "react-router-dom";
-import { SocketProvider } from "./context/SocketContext.tsx";
 import { SidebarProvider } from "@context/SliderContext.tsx";
 import { Toaster } from "sonner";
+import { store } from "@redux/store.ts";
+import { Provider } from "react-redux";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
     <AuthProvider>
       <SidebarProvider>
-        <SocketProvider>
+        <Provider store={store}>
           <App />
-        </SocketProvider>
+        </Provider>
       </SidebarProvider>
     </AuthProvider>
     <Toaster

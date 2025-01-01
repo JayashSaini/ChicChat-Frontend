@@ -1,11 +1,16 @@
 import { UserInterface } from "./user";
 
+export interface MediaState {
+  audioEnabled: boolean;
+  videoEnabled: boolean;
+}
+
 export interface ParticipantInterface {
+  _id: string | undefined;
   user: UserInterface;
-  isAudioOn: boolean;
-  isVideoOn: boolean;
   stream: MediaStream | null;
   isPin: boolean;
+  mediaState: MediaState;
 }
 export interface Room {
   _id: string; // MongoDB Object ID

@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useSocket, useAuth } from "@context/index";
+import { useAuth } from "@context/index";
 import { toast } from "sonner";
 import { UserInterface } from "@interfaces/user";
 import Button from "@components/Button";
 import ParticipantTile from "@components/video/ParticipantTile";
-import { useRoom } from "@context/index";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@redux/store";
+import { toggleAudio, toggleVideo } from "@redux/slice/media.slice";
+import { initializeMedia } from "@redux/thunk/media.thunk";
 
 const RoomJoinRequest: React.FC = () => {
   // State to manage the loading state while waiting for room join approval
@@ -13,15 +16,19 @@ const RoomJoinRequest: React.FC = () => {
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
   // Media context hooks for stream and media features
-  const { mediaStream, mediaState } = useRoom();
+  // const { mediaStream, mediaState } = useMedia();
+  const { mediaStream, mediaState } = useSelector(
+    (state: RootState) => state.media
+  );
 
   // Auth and socket context hooks for user info and socket connection
   const { user } = useAuth();
-  const { socket } = useSocket();
+  const { socket } = useSelector((state: RootState) => state.socket);
 
   // Retrieve roomId from URL parameters and setup navigate for routing
   const { roomId } = useParams();
   const navigate = useNavigate();
+  const dispatch: AppDispatch = useDispatch();
 
   // Handle socket events for room join errors
   const handleRoomError = (error: { message: string }) => {
@@ -52,7 +59,7 @@ const RoomJoinRequest: React.FC = () => {
     if (!socket) return;
 
     setJoinRoomLoader(true);
-    socket.emit("admin:join-request", { roomId, user, socketId: socket.id });
+    socket.emit("admin:join-request", { roomId, user });
 
     const id = setTimeout(() => {
       toast.info(
@@ -92,6 +99,12 @@ const RoomJoinRequest: React.FC = () => {
     };
   }, [timeoutId]);
 
+  useEffect(() => {
+    if (!mediaStream) {
+      dispatch(initializeMedia());
+    }
+  }, [mediaStream, dispatch]);
+
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-backgroundSecondary text-textPrimary px-4">
       <div className="relative w-full max-w-3xl rounded-lg">
@@ -106,10 +119,11 @@ const RoomJoinRequest: React.FC = () => {
             user?.avatar && (
               <ParticipantTile
                 avatar={user?.avatar?.url}
-                isAudioOn={mediaState.audioEnabled}
-                isVideoOn={mediaState.videoEnabled}
                 stream={mediaStream}
                 username={user?.username}
+                isAudioOn={mediaState.audioEnabled}
+                isVideoOn={mediaState.videoEnabled}
+                isMine={true}
               />
             )
           )}
@@ -125,7 +139,9 @@ const RoomJoinRequest: React.FC = () => {
         {/* Control Buttons for video and audio */}
         <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
           <Button
-            onClick={mediaState.toggleVideo}
+            onClick={() => {
+              dispatch(toggleVideo());
+            }}
             severity={mediaState.videoEnabled ? "secondary" : "danger"}
             disabled={mediaState.error ? true : false}
             size="small"
@@ -134,7 +150,9 @@ const RoomJoinRequest: React.FC = () => {
           </Button>
 
           <Button
-            onClick={mediaState.toggleAudio}
+            onClick={() => {
+              dispatch(toggleAudio());
+            }}
             severity={mediaState.audioEnabled ? "secondary" : "danger"}
             disabled={mediaState.error ? true : false}
             size="small"
