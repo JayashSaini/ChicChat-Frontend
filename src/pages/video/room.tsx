@@ -41,9 +41,11 @@ import {
   setParticipantReactionHandler,
   setParticipantsHandRaised,
   toggleHandRaisedHandler,
+  toggleScreenSharingThunk,
   updateParticipantMedia,
 } from "@redux/thunk/room.thunk";
 import { initializeMedia } from "@redux/thunk/media.thunk";
+import { LuScreenShareOff } from "react-icons/lu";
 
 const Room = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -57,8 +59,10 @@ const Room = () => {
   const { roomId } = useParams<{ roomId: string }>();
   const { user } = useAuth();
   const { socket } = useSelector((state: RootState) => state.socket);
-  const { isHandRaised } = useSelector((state: RootState) => state.room);
-  const { mediaState, mediaStream } = useSelector(
+  const { isHandRaised, participants } = useSelector(
+    (state: RootState) => state.room
+  );
+  const { mediaState, mediaStream, isScreenSharing } = useSelector(
     (state: RootState) => state.media
   );
   const navigate = useNavigate();
@@ -273,7 +277,9 @@ const Room = () => {
             <div
               role="button"
               onClick={() => {
-                dispatch(toggleVideo());
+                if (isScreenSharing) {
+                  dispatch(toggleScreenSharingThunk());
+                } else dispatch(toggleVideo());
               }}
             >
               {mediaState.videoEnabled ? <RiVideoOnLine /> : <RiVideoOffLine />}
@@ -286,8 +292,23 @@ const Room = () => {
             >
               {mediaState.audioEnabled ? <RiMicLine /> : <RiMicOffLine />}
             </div>
-            <div role="button">
-              <LuScreenShare />
+            <div
+              role="button"
+              onClick={() => {
+                if (participants && participants.length == 0) {
+                  toast.error(
+                    "Cannot share screen when no other users are connected."
+                  );
+                  return;
+                }
+                dispatch(toggleScreenSharingThunk());
+              }}
+            >
+              {participants && participants.length == 0 ? (
+                <LuScreenShareOff />
+              ) : (
+                <LuScreenShare />
+              )}
             </div>
             {/* Leave room button */}
             <button

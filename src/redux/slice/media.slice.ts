@@ -10,6 +10,7 @@ interface MediaState {
 export interface MediaContext {
   mediaStream: MediaStream | null;
   mediaState: MediaState;
+  isScreenSharing?: boolean;
 }
 
 const initialState: MediaContext = {
@@ -19,6 +20,7 @@ const initialState: MediaContext = {
     audioEnabled: false,
     videoEnabled: false,
   },
+  isScreenSharing: false,
 };
 
 const mediaSlice = createSlice({
@@ -57,10 +59,37 @@ const mediaSlice = createSlice({
     setMediaStream(state, action: PayloadAction<MediaStream>) {
       state.mediaStream = action.payload;
     },
+    setMediaStreamVideoTracks(
+      state,
+      action: PayloadAction<MediaStreamTrack[]>
+    ) {
+      if (action.payload.length > 0) {
+        const currentAudioTrack = state?.mediaStream?.getAudioTracks()[0]; // Get the current audio track
+        const newVideoTrack = action.payload[0]; // The new video track from action
+
+        // Create an array of tracks, filtering out undefined values
+        const tracks: MediaStreamTrack[] = [newVideoTrack];
+
+        // Only add the audio track if it exists
+        if (currentAudioTrack) {
+          tracks.push(currentAudioTrack);
+        }
+
+        // Create a new MediaStream with the valid tracks
+        const newMediaStream = new MediaStream(tracks);
+
+        // Store the updated MediaStream in the state
+        state.mediaStream = newMediaStream;
+      }
+    },
 
     // Set error state
     setError(state, action: PayloadAction<string | null>) {
       state.mediaState.error = action.payload;
+    },
+
+    toggleScreenSharing(state) {
+      state.isScreenSharing = !state.isScreenSharing;
     },
   },
   extraReducers: (builder) => {
@@ -81,8 +110,14 @@ const mediaSlice = createSlice({
 });
 
 // Actions export
-export const { toggleVideo, toggleAudio, setMediaStream, setError } =
-  mediaSlice.actions;
+export const {
+  toggleVideo,
+  toggleAudio,
+  setMediaStream,
+  setError,
+  toggleScreenSharing,
+  setMediaStreamVideoTracks,
+} = mediaSlice.actions;
 
 // Reducer export
 export default mediaSlice.reducer;

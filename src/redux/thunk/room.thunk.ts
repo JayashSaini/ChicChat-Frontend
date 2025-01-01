@@ -10,7 +10,11 @@ import {
   setParticipants,
 } from "../slice/room.slice";
 import { UserInterface } from "@interfaces/user";
-import { MediaContext } from "../slice/media.slice";
+import {
+  MediaContext,
+  setMediaStreamVideoTracks,
+  toggleScreenSharing,
+} from "../slice/media.slice";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { SocketState } from "@redux/slice/socket.slice";
 import { MediaState, ParticipantInterface } from "@interfaces/stream";
@@ -444,4 +448,93 @@ export const setParticipantsHandRaised =
         )
       );
     }, 10000);
+  };
+
+export const toggleScreenSharingThunk =
+  () => async (dispatch: AppDispatch, getState: () => RootState) => {
+    const state = getState();
+    const media = state.media;
+
+    try {
+      // Check if screen sharing is currently active
+      if (media.isScreenSharing) {
+        console.log("Stopping screen sharing...");
+
+        const cameraStream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
+        const videoTrack = cameraStream.getVideoTracks()[0];
+
+        // Pass the videoTrack as an array
+        dispatch(setMediaStreamVideoTracks([videoTrack]));
+
+        // Iterate over all peerConnections and replace the video track for each peer
+        Object.values(peerConnections).forEach((peerConnection) => {
+          peerConnection.getSenders().forEach((sender) => {
+            if (sender.track?.kind === "video") {
+              if (videoTrack) {
+                sender.replaceTrack(videoTrack);
+              }
+            }
+          });
+        });
+
+        // Dispatch an action to update the state
+        dispatch(toggleScreenSharing());
+      } else {
+        console.log("Starting screen sharing...");
+
+        // Start screen sharing
+        const screenStream = await navigator.mediaDevices.getDisplayMedia({
+          video: true,
+        });
+        const screenTrack = screenStream.getVideoTracks()[0];
+
+        // Pass the screenTrack as an array
+        dispatch(setMediaStreamVideoTracks([screenTrack]));
+
+        // Iterate over all peerConnections and replace the video track for each peer
+        Object.values(peerConnections).forEach((peerConnection) => {
+          peerConnection.getSenders().forEach((sender) => {
+            if (sender.track?.kind === "video") {
+              if (screenTrack) {
+                sender.replaceTrack(screenTrack);
+              }
+            }
+          });
+        });
+
+        // Dispatch an action to update the state
+        dispatch(toggleScreenSharing());
+
+        // Handle screen sharing stop event
+        screenTrack.onended = async () => {
+          const cameraStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true,
+          });
+          const videoTrack = cameraStream.getVideoTracks()[0];
+
+          // Pass the videoTrack as an array
+          dispatch(setMediaStreamVideoTracks([videoTrack]));
+
+          // Iterate over all peerConnections and replace the video track for each peer
+          Object.values(peerConnections).forEach((peerConnection) => {
+            peerConnection.getSenders().forEach((sender) => {
+              if (sender.track?.kind === "video") {
+                if (videoTrack) {
+                  sender.replaceTrack(videoTrack);
+                }
+              }
+            });
+          });
+
+          // Dispatch an action to update the state
+          dispatch(toggleScreenSharing());
+        };
+      }
+    } catch (error) {
+      console.error("Error toggling screen sharing:", error);
+    }
   };
