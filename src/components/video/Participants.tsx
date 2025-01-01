@@ -8,7 +8,9 @@ const Participants: React.FC = () => {
   const { mediaStream, mediaState } = useSelector(
     (state: RootState) => state.media
   );
-  const { participants } = useSelector((state: RootState) => state.room);
+  const { participants, emojiReaction } = useSelector(
+    (state: RootState) => state.room
+  );
   const { user } = useAuth();
   const [gridClass, setGridClass] = useState<
     "tile-1" | "tile-2" | "tile-3" | "tile-4"
@@ -42,6 +44,7 @@ const Participants: React.FC = () => {
             stream={mediaStream}
             username={user?.username}
             isMine={true}
+            emojiReaction={emojiReaction}
           />
         </div>
       )}
@@ -55,6 +58,8 @@ const Participants: React.FC = () => {
               username={participant?.user?.username}
               isAudioOn={participant?.mediaState.audioEnabled}
               isVideoOn={participant?.mediaState.videoEnabled}
+              emojiReaction={participant?.emojiReaction}
+              isHandRaised={participant?.isHandRaised}
             />
           </div>
         ))}

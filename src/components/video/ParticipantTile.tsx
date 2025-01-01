@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { RiMicOffFill } from "@assets/icons";
+import { HiHandRaised, RiMicOffFill } from "@assets/icons";
 
 interface ParticipantTileProps {
   username: string;
@@ -8,6 +8,8 @@ interface ParticipantTileProps {
   isVideoOn: boolean;
   stream?: MediaStream | null;
   isMine?: boolean;
+  emojiReaction?: string | null;
+  isHandRaised?: boolean;
 }
 
 const ParticipantTile: React.FC<ParticipantTileProps> = ({
@@ -17,6 +19,8 @@ const ParticipantTile: React.FC<ParticipantTileProps> = ({
   isVideoOn,
   stream,
   isMine = false,
+  emojiReaction = null,
+  isHandRaised = false,
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -35,8 +39,22 @@ const ParticipantTile: React.FC<ParticipantTileProps> = ({
         </div>
       )}
 
+      {/* Emoji Reaction */}
+      {emojiReaction && (
+        <div className="absolute bottom-4 right-4 text-white text-xl z-20">
+          {emojiReaction}
+        </div>
+      )}
+
+      {/* Emoji Reaction */}
+      {isHandRaised && (
+        <div className="absolute top-4 left-4 text-white text-xl z-20">
+          <HiHandRaised />
+        </div>
+      )}
+
       {/* Username */}
-      <div className="absolute bottom-5 left-5 text-base font-semibold text-white select-none z-10">
+      <div className="absolute bottom-5 left-5 text-base font-semibold text-white select-none z-20">
         {username}
       </div>
 

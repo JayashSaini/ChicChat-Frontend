@@ -11,6 +11,8 @@ export interface ParticipantInterface {
   stream: MediaStream | null;
   isPin: boolean;
   mediaState: MediaState;
+  emojiReaction?: string | null;
+  isHandRaised?: boolean;
 }
 export interface Room {
   _id: string; // MongoDB Object ID

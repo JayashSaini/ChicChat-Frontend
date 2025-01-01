@@ -3,14 +3,17 @@ import { toast } from "sonner";
 import {
   addParticipant,
   removeParticipant,
+  resetEmoji,
   RoomState,
+  setEmojiReaction,
+  setIsHandRaised,
   setParticipants,
 } from "../slice/room.slice";
 import { UserInterface } from "@interfaces/user";
 import { MediaContext } from "../slice/media.slice";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { SocketState } from "@redux/slice/socket.slice";
-import { MediaState } from "@interfaces/stream";
+import { MediaState, ParticipantInterface } from "@interfaces/stream";
 
 // Peer Configuration for WebRTC
 const configuration: RTCConfiguration = {
@@ -321,3 +324,124 @@ export const updateParticipantMedia = createAsyncThunk<
     );
   }
 );
+
+// Methods for Send user reaction to the participation
+
+export const setEmojiReactionHandler =
+  ({ emoji, userId }: { emoji: string; userId: string }) =>
+  (dispatch: AppDispatch, getState: () => RootState) => {
+    const state = getState();
+    const socket = state.socket.socket;
+    const room = state.room.room;
+
+    if (socket && room) {
+      socket.emit("user:emoji:reaction", {
+        userId,
+        emoji,
+        roomId: room.roomId,
+      });
+    }
+
+    dispatch(setEmojiReaction(emoji));
+
+    // Reset the emoji after 10 seconds
+    setTimeout(() => {
+      dispatch(resetEmoji());
+    }, 10000);
+  };
+
+export const setParticipantReactionHandler =
+  ({ emoji, userId }: { emoji: string; userId: string }) =>
+  (dispatch: AppDispatch, getState: () => RootState) => {
+    const participants = getState().room.participants;
+
+    dispatch(
+      setParticipants(
+        participants.map((p) => {
+          if (p._id?.toString() == userId.toString()) {
+            return { ...p, emojiReaction: emoji };
+          }
+          return p;
+        })
+      )
+    );
+
+    // Reset the emoji after 10 seconds
+    setTimeout(() => {
+      dispatch(
+        setParticipants(
+          participants.map((p) => {
+            if (p._id?.toString() == userId.toString()) {
+              return { ...p, emojiReaction: null };
+            }
+            return p;
+          })
+        )
+      );
+    }, 10000);
+  };
+
+export const toggleHandRaisedHandler =
+  ({ userId }: { userId: string }) =>
+  (dispatch: AppDispatch, getState: () => RootState) => {
+    const state = getState();
+    const socket = state.socket.socket;
+    const room = state.room;
+
+    console.log("calling toggleHandRaisedHandler => ", userId);
+
+    if (socket && room) {
+      socket.emit("user:hand:raised", {
+        userId,
+        roomId: room?.room?.roomId,
+      });
+    }
+
+    dispatch(setIsHandRaised(!room?.isHandRaised));
+
+    // Reset the emoji after 10 seconds
+    setTimeout(() => {
+      dispatch(setIsHandRaised(false));
+    }, 10000);
+  };
+
+export const setParticipantsHandRaised =
+  ({ userId }: { userId: string }) =>
+  (dispatch: AppDispatch, getState: () => RootState) => {
+    const participants = getState().room.participants;
+    console.log("receiving setParticipantsHandRaised => ", userId);
+
+    const updatedParticipants = participants.map((p: ParticipantInterface) => {
+      if (p._id?.toString() === userId.toString()) {
+        toast.info(`${p.user.username} hand raised.`);
+        return { ...p, isHandRaised: !p.isHandRaised };
+      }
+      return p;
+    });
+
+    // Separate the hand-raised participant and move them to the top
+    const handRaisedParticipants = updatedParticipants.filter(
+      (p: ParticipantInterface) => p.isHandRaised
+    );
+    const nonHandRaisedParticipants = updatedParticipants.filter(
+      (p: ParticipantInterface) => !p.isHandRaised
+    );
+
+    dispatch(
+      setParticipants([...handRaisedParticipants, ...nonHandRaisedParticipants])
+    );
+
+    // Reset the emoji after 10 seconds
+    setTimeout(() => {
+      dispatch(
+        setParticipants(
+          participants.map((p) => {
+            if (p._id?.toString() == userId.toString()) {
+              return { ...p, isHandRaised: false };
+            }
+            return p;
+          })
+        )
+      );
+    }, 10000);
+  };

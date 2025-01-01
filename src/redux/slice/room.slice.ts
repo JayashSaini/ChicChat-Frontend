@@ -4,15 +4,15 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export interface RoomState {
   room: Room | undefined;
   participants: ParticipantInterface[];
-  peerConnections: Record<string, RTCPeerConnection>;
-  candidateQueue: Record<string, RTCIceCandidate[]>;
+  emojiReaction?: string | null;
+  isHandRaised?: boolean;
 }
 
 const initialState: RoomState = {
   room: undefined,
   participants: [],
-  peerConnections: {},
-  candidateQueue: {},
+  emojiReaction: null,
+  isHandRaised: false,
 };
 
 const roomSlice = createSlice({
@@ -33,46 +33,14 @@ const roomSlice = createSlice({
         (p) => p._id !== action.payload
       );
     },
-
-    setPeerConnections(
-      state,
-      action: PayloadAction<Record<string, RTCPeerConnection>>
-    ) {
-      state.peerConnections = action.payload;
+    resetEmoji(state) {
+      state.emojiReaction = null;
     },
-    setCandidateQueue(
-      state,
-      action: PayloadAction<Record<string, RTCIceCandidate[]>>
-    ) {
-      state.candidateQueue = action.payload;
+    setEmojiReaction(state, action: PayloadAction<string | null>) {
+      state.emojiReaction = action.payload;
     },
-    addCandidate(
-      state,
-      action: PayloadAction<{ socketId: string; candidate: RTCIceCandidate }>
-    ) {
-      const { socketId, candidate } = action.payload;
-      if (!state.candidateQueue[socketId]) {
-        state.candidateQueue[socketId] = [];
-      }
-      state.candidateQueue[socketId].push(candidate);
-    },
-    removeCandidate(state, action: PayloadAction<{ socketId: string }>) {
-      const { socketId } = action.payload;
-      delete state.candidateQueue[socketId];
-    },
-    addPeerConnection(
-      state,
-      action: PayloadAction<{
-        socketId: string;
-        peerConnection: RTCPeerConnection;
-      }>
-    ) {
-      const { socketId, peerConnection } = action.payload;
-      state.peerConnections[socketId] = peerConnection;
-    },
-    removePeerConnection(state, action: PayloadAction<{ socketId: string }>) {
-      const { socketId } = action.payload;
-      delete state.peerConnections[socketId];
+    setIsHandRaised(state, action: PayloadAction<boolean>) {
+      state.isHandRaised = action.payload;
     },
   },
 });
@@ -82,12 +50,9 @@ export const {
   setParticipants,
   addParticipant,
   removeParticipant,
-  setPeerConnections,
-  setCandidateQueue,
-  addCandidate,
-  removeCandidate,
-  addPeerConnection,
-  removePeerConnection,
+  setEmojiReaction,
+  resetEmoji,
+  setIsHandRaised,
 } = roomSlice.actions;
 
 // Reducer export

@@ -4,25 +4,28 @@ import ClickAwayListener from "@mui/material/ClickAwayListener";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import { VscSmiley } from "react-icons/vsc";
-import { toast } from "sonner";
 import { styled, TooltipProps } from "@mui/material";
+import { useAuth } from "@context/index";
+import { setEmojiReactionHandler } from "@redux/thunk/room.thunk";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@redux/store";
 
 const ReactionPicker: React.FC = () => {
   const [isPickerVisible, setIsPickerVisible] = useState<boolean>(false);
-  
-
   const emojis = ["😊", "❤️", "🎉", "👍", "😢"];
+  const dispatch: AppDispatch = useDispatch();
+  const { user } = useAuth();
 
   // Handle emoji click
   const handleReactionClick = (emoji: string) => {
-  
     setIsPickerVisible(false); // Close the picker after selection
-    toast("send to all", {
-      duration: 4000,
-      icon: <>{emoji}</>,
-    });
 
-    // Trigger confetti animation for the selected emoji
+    dispatch(
+      setEmojiReactionHandler({
+        emoji,
+        userId: user?._id?.toString() || " ",
+      })
+    );
   };
 
   // Handle tooltip close when clicking outside

@@ -38,6 +38,9 @@ import {
   handleUserJoined,
   handleUserLeave,
   offer,
+  setParticipantReactionHandler,
+  setParticipantsHandRaised,
+  toggleHandRaisedHandler,
   updateParticipantMedia,
 } from "@redux/thunk/room.thunk";
 import { initializeMedia } from "@redux/thunk/media.thunk";
@@ -47,7 +50,6 @@ const Room = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility state for user joining requests
   const [isPeopleModalOpen, setIsPeopleModalOpen] = useState(false); // Modal visibility state for people list
   const [isChatBoxModalOpen, setIsChatBoxModalOpen] = useState(false); // Modal visibility state for chatbox
-  const [isHandRaised, setIsHandRaised] = useState(false); // State to manage hand raise
   const [joiningRequestUser, setJoiningRequestUser] =
     useState<UserInterface | null>(null); // User waiting for approval
 
@@ -55,6 +57,7 @@ const Room = () => {
   const { roomId } = useParams<{ roomId: string }>();
   const { user } = useAuth();
   const { socket } = useSelector((state: RootState) => state.socket);
+  const { isHandRaised } = useSelector((state: RootState) => state.room);
   const { mediaState, mediaStream } = useSelector(
     (state: RootState) => state.media
   );
@@ -88,6 +91,7 @@ const Room = () => {
                   audioEnabled: false,
                   videoEnabled: false,
                 },
+                emojiReaction: null,
               }))
             )
           );
@@ -182,6 +186,12 @@ const Room = () => {
     socket.on("participant:media-update", (userId, mediaState) =>
       dispatch(updateParticipantMedia({ userId, mediaState }))
     );
+    socket.on("participant:emoji:reaction", (data) => {
+      dispatch(setParticipantReactionHandler(data));
+    });
+    socket.on("participant:hand:raised", (data) => {
+      dispatch(setParticipantsHandRaised(data));
+    });
 
     // Add event listeners for beforeunload and unload
     window.addEventListener("beforeunload", handleUnload);
@@ -196,6 +206,8 @@ const Room = () => {
       socket.off("answer");
       socket.off("ice-candidate");
       socket.off("participant:media-update");
+      socket.off("participant:emoji:reaction");
+      socket.off("participant:hand:raised");
 
       window.removeEventListener("beforeunload", handleUnload);
       window.removeEventListener("unload", handleUnload);
@@ -293,7 +305,12 @@ const Room = () => {
             </button>
 
             {/* Hand raise button */}
-            <div role="button" onClick={() => setIsHandRaised(!isHandRaised)}>
+            <div
+              role="button"
+              onClick={() =>
+                dispatch(toggleHandRaisedHandler({ userId: user?._id || " " }))
+              }
+            >
               {isHandRaised ? <HiHandRaised /> : <HiOutlineHandRaised />}
             </div>
 
