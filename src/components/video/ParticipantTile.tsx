@@ -1,5 +1,10 @@
 import React, { useEffect, useRef } from "react";
-import { HiHandRaised, RiMicOffFill } from "@assets/icons";
+import {
+  HiHandRaised,
+  RiMicOffFill,
+  RiPushpin2Fill,
+  RiPushpin2Line,
+} from "@assets/icons";
 
 interface ParticipantTileProps {
   username: string;
@@ -10,6 +15,8 @@ interface ParticipantTileProps {
   isMine?: boolean;
   emojiReaction?: string | null;
   isHandRaised?: boolean;
+  isPin?: boolean;
+  togglePin?: (username: string) => void;
 }
 
 const ParticipantTile: React.FC<ParticipantTileProps> = ({
@@ -21,6 +28,8 @@ const ParticipantTile: React.FC<ParticipantTileProps> = ({
   isMine = false,
   emojiReaction = null,
   isHandRaised = false,
+  isPin = false,
+  togglePin = () => {},
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -31,30 +40,45 @@ const ParticipantTile: React.FC<ParticipantTileProps> = ({
   }, [stream]);
 
   return (
-    <div className="w-full h-full  relative group rounded-xl overflow-hidden ">
+    <div className="w-full h-full  relative group text-textPrimary rounded-xl overflow-hidden ">
       {/* Audio Indicator */}
       {!isAudioOn && (
-        <div className="absolute top-5 right-5 text-white text-xl z-20">
+        <div className="absolute top-5 right-5  text-xl z-20">
           <RiMicOffFill />
         </div>
       )}
 
       {/* Emoji Reaction */}
       {emojiReaction && (
-        <div className="absolute bottom-4 right-4 text-white text-xl z-20">
+        <div className="absolute bottom-4 right-4  text-xl z-20">
           {emojiReaction}
         </div>
       )}
 
       {/* Emoji Reaction */}
       {isHandRaised && (
-        <div className="absolute top-4 left-4 text-white text-xl z-20">
+        <div className="absolute top-4 left-8  text-xl z-20 ">
           <HiHandRaised />
         </div>
       )}
 
+      {/* Pin Toggle */}
+      {!isMine && (
+        <div
+          className="absolute top-5 left-4 text-2xl  cursor-pointer z-10"
+          onClick={() => {
+            togglePin(username);
+          }}
+        >
+          {isPin ? (
+            <RiPushpin2Fill />
+          ) : (
+            <RiPushpin2Line className="group-hover:opacity-100 opacity-0 ease-linear duration-100" />
+          )}
+        </div>
+      )}
       {/* Username */}
-      <div className="absolute bottom-5 left-5 text-base font-semibold text-white select-none z-20">
+      <div className="absolute bottom-5 left-5 text-white text-base font-semibold  select-none z-20">
         {username}
       </div>
 

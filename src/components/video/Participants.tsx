@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import ParticipantTile from "./ParticipantTile";
 import { useAuth } from "@context/index";
-import { useSelector } from "react-redux";
-import { RootState } from "@redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@redux/store";
+import { setParticipants } from "@redux/slice/room.slice";
 
 const Participants: React.FC = () => {
   const { mediaStream, mediaState } = useSelector(
@@ -16,6 +17,8 @@ const Participants: React.FC = () => {
     "tile-1" | "tile-2" | "tile-3" | "tile-4"
   >("tile-1");
 
+  const dispatch: AppDispatch = useDispatch();
+
   useEffect(() => {
     // Adjust grid layout based on the number of participants
     if (participants.length == 0) {
@@ -27,9 +30,21 @@ const Participants: React.FC = () => {
     } else {
       setGridClass("tile-4");
     }
-    console.log("participants check : ", participants);
     // Remove the grid layout class when the participants list changes
   }, [participants]);
+
+  const togglePin = (username: string) => {
+    // Update the isPin value and then rearrange the list
+    const updatedList = participants.map((p) =>
+      p.user?.username === username ? { ...p, isPin: !p.isPin } : p
+    );
+
+    // Move pinned users to the top after updating isPin
+    const pinnedUsers = updatedList.filter((user) => user.isPin);
+    const unpinnedUsers = updatedList.filter((user) => !user.isPin);
+
+    dispatch(setParticipants([...pinnedUsers, ...unpinnedUsers]));
+  };
 
   return (
     <div
@@ -60,26 +75,13 @@ const Participants: React.FC = () => {
               isVideoOn={participant?.mediaState.videoEnabled}
               emojiReaction={participant?.emojiReaction}
               isHandRaised={participant?.isHandRaised}
+              isPin={participant?.isPin}
+              togglePin={togglePin}
             />
           </div>
         ))}
     </div>
   );
 };
-
-// const togglePin = (index: number) => {
-//   // Update the isPin value and then rearrange the list
-//   setParticipation((prevState) => {
-//     const updatedList = prevState.map((user, i) =>
-//       i === index ? { ...user, isPin: !user.isPin } : user
-//     );
-
-//     // Move pinned users to the top after updating isPin
-//     const pinnedUsers = updatedList.filter((user) => user.isPin);
-//     const unpinnedUsers = updatedList.filter((user) => !user.isPin);
-
-//     return [...pinnedUsers, ...unpinnedUsers];
-//   });
-// };
 
 export default Participants;

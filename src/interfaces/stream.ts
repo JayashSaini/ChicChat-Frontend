@@ -26,3 +26,10 @@ export interface Room {
   updatedAt: string; // ISO string for last updated date
   __v: number; // Version key for Mongoose documents
 }
+
+export interface RoomMessageItem {
+  username: string;
+  content: string;
+  createdAt: Date | string;
+  isOwnMessage: boolean;
+}

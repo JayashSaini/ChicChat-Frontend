@@ -30,7 +30,12 @@ import ReactionPicker from "@components/ui/reactionPicker";
 import { UserInterface } from "@interfaces/user";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@redux/store";
-import { setParticipants, setRoom } from "@redux/slice/room.slice";
+import {
+  addRoomMessage,
+  setIsParticipantTyping,
+  setParticipants,
+  setRoom,
+} from "@redux/slice/room.slice";
 import { toggleAudio, toggleVideo } from "@redux/slice/media.slice";
 import {
   handleAnswer,
@@ -196,6 +201,28 @@ const Room = () => {
     socket.on("participant:hand:raised", (data) => {
       dispatch(setParticipantsHandRaised(data));
     });
+    socket.on("user:kicked", () => {
+      toast.info("You have been kicked from the room.");
+      navigate("/workspace/video");
+    });
+    socket.on("participants:received-message", (message) => {
+      dispatch(
+        addRoomMessage({
+          isOwnMessage: false,
+          username: message.username,
+          content: message.content,
+          createdAt: message.createdAt,
+        })
+      );
+    });
+    socket.on("participants:typing", () => {
+      console.log("typing event");
+      dispatch(setIsParticipantTyping(true));
+    });
+    socket.on("participants:stop-typing", () => {
+      console.log(" stop typing event");
+      dispatch(setIsParticipantTyping(false));
+    });
 
     // Add event listeners for beforeunload and unload
     window.addEventListener("beforeunload", handleUnload);
@@ -212,6 +239,10 @@ const Room = () => {
       socket.off("participant:media-update");
       socket.off("participant:emoji:reaction");
       socket.off("participant:hand:raised");
+      socket.off("user:kicked");
+      socket.off("participants:received-message");
+      socket.off("participants:typing");
+      socket.off("participants:stop-typing");
 
       window.removeEventListener("beforeunload", handleUnload);
       window.removeEventListener("unload", handleUnload);
@@ -358,9 +389,13 @@ const Room = () => {
               <MdOutlinePeopleAlt />
             </div>
             <div
-              className="text-2xl"
+              className={`text-2xl `}
               role="button"
               onClick={() => {
+                if (participants.length == 0) {
+                  toast.error("No other users are connected.");
+                  return;
+                }
                 setIsPeopleModalOpen(false);
                 setIsChatBoxModalOpen(!isChatBoxModalOpen);
               }}

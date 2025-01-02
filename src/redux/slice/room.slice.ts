@@ -1,4 +1,8 @@
-import { ParticipantInterface, Room } from "@interfaces/stream";
+import {
+  ParticipantInterface,
+  Room,
+  RoomMessageItem,
+} from "@interfaces/stream";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface RoomState {
@@ -6,6 +10,8 @@ export interface RoomState {
   participants: ParticipantInterface[];
   emojiReaction?: string | null;
   isHandRaised?: boolean;
+  roomMessages?: RoomMessageItem[];
+  isParticipantTyping?: boolean;
 }
 
 const initialState: RoomState = {
@@ -13,6 +19,8 @@ const initialState: RoomState = {
   participants: [],
   emojiReaction: null,
   isHandRaised: false,
+  roomMessages: [],
+  isParticipantTyping: false,
 };
 
 const roomSlice = createSlice({
@@ -42,6 +50,12 @@ const roomSlice = createSlice({
     setIsHandRaised(state, action: PayloadAction<boolean>) {
       state.isHandRaised = action.payload;
     },
+    addRoomMessage(state, action: PayloadAction<RoomMessageItem>) {
+      state?.roomMessages?.push(action.payload);
+    },
+    setIsParticipantTyping(state, action: PayloadAction<boolean>) {
+      state.isParticipantTyping = action.payload;
+    },
   },
 });
 
@@ -53,6 +67,8 @@ export const {
   setEmojiReaction,
   resetEmoji,
   setIsHandRaised,
+  addRoomMessage,
+  setIsParticipantTyping,
 } = roomSlice.actions;
 
 // Reducer export
