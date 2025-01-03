@@ -93,7 +93,7 @@ const ParticipantTile: React.FC<ParticipantTileProps> = ({
         {!isVideoOn && (
           <div className="bg-[#096fe4bb] absolute flex items-center justify-center w-full h-full">
             <img
-              className="rounded-full w-[80px] h-[80px] object-cover select-none"
+              className="rounded-full w-[100px] h-[100px] object-cover select-none"
               src={avatar}
               alt={username}
             />

@@ -24,6 +24,7 @@ export interface Room {
   isActive: boolean; // Status of the room
   createdAt: string; // ISO string for creation date
   updatedAt: string; // ISO string for last updated date
+  isChatEnable: boolean;
   __v: number; // Version key for Mongoose documents
 }
 

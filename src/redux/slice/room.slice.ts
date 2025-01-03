@@ -54,7 +54,13 @@ const roomSlice = createSlice({
       state?.roomMessages?.push(action.payload);
     },
     setIsParticipantTyping(state, action: PayloadAction<boolean>) {
+      console.log("setIsParticipantTyping : => ", action.payload);
       state.isParticipantTyping = action.payload;
+    },
+    setRoomChatIsEnabled(state, action: PayloadAction<boolean>) {
+      if (state.room) {
+        state.room.isChatEnable = action.payload;
+      }
     },
   },
 });
@@ -69,6 +75,7 @@ export const {
   setIsHandRaised,
   addRoomMessage,
   setIsParticipantTyping,
+  setRoomChatIsEnabled,
 } = roomSlice.actions;
 
 // Reducer export

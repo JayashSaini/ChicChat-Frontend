@@ -8,6 +8,7 @@ import { useAuth } from "@context/index";
 import Typing from "@components/chat/Typing";
 import MessageItem from "./MessageItem";
 import { addRoomMessage } from "@redux/slice/room.slice";
+import { toast } from "sonner";
 
 const TYPING_EVENT = "user:typing";
 const STOP_TYPING_EVENT = "user:stop-typing";
@@ -61,6 +62,10 @@ const ChatBox: React.FC<{
 
   const sendChatMessage = async () => {
     if (!socket) return;
+    if (!message || message.length === 0) {
+      toast.info("Please enter a message.");
+      return;
+    }
 
     socket.emit(STOP_TYPING_EVENT, room?.roomId);
     socket.emit("user:send-message", {
@@ -82,6 +87,13 @@ const ChatBox: React.FC<{
     );
     setMessage("");
   };
+
+  useEffect(() => {
+    if (!socket) return;
+    return () => {
+      socket.emit(STOP_TYPING_EVENT, room?.roomId);
+    };
+  }, [socket, room?.roomId]);
 
   return (
     <motion.div

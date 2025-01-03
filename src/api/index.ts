@@ -149,6 +149,17 @@ const getRoomById = (roomId: string) => {
   return apiClient.get(`/rooms/${roomId}`);
 };
 
+const toggleChatEnable = (roomId: string) => {
+  return apiClient.patch(`/rooms/chat/${roomId}`);
+};
+
+const setPasswordHandler = (data: {
+  password: string;
+  confirmPassword: string;
+  roomId: string;
+}) => {
+  return apiClient.patch(`/rooms/set-password`, data);
+};
 // Export all the API functions for use in other parts of the application
 export {
   addParticipantToGroup,
@@ -173,4 +184,6 @@ export {
   getProfile,
   updateAvatar,
   getRoomById,
+  setPasswordHandler,
+  toggleChatEnable,
 };

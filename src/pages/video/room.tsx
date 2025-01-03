@@ -22,7 +22,6 @@ import {
   LuScreenShare,
   HiOutlineHandRaised,
   HiHandRaised,
-  BsThreeDotsVertical,
   MdOutlinePeopleAlt,
   BsChatLeftText,
 } from "@assets/icons";
@@ -35,6 +34,7 @@ import {
   setIsParticipantTyping,
   setParticipants,
   setRoom,
+  setRoomChatIsEnabled,
 } from "@redux/slice/room.slice";
 import { toggleAudio, toggleVideo } from "@redux/slice/media.slice";
 import {
@@ -52,6 +52,8 @@ import {
 import { initializeMedia } from "@redux/thunk/media.thunk";
 import { LuScreenShareOff } from "react-icons/lu";
 
+import MenuDropdown from "@components/video/MenuDropdown";
+
 const Room = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility state for user joining requests
@@ -64,7 +66,7 @@ const Room = () => {
   const { roomId } = useParams<{ roomId: string }>();
   const { user } = useAuth();
   const { socket } = useSelector((state: RootState) => state.socket);
-  const { isHandRaised, participants } = useSelector(
+  const { isHandRaised, participants, room } = useSelector(
     (state: RootState) => state.room
   );
   const { mediaState, mediaStream, isScreenSharing } = useSelector(
@@ -216,12 +218,15 @@ const Room = () => {
       );
     });
     socket.on("participants:typing", () => {
-      console.log("typing event");
       dispatch(setIsParticipantTyping(true));
     });
+
     socket.on("participants:stop-typing", () => {
-      console.log(" stop typing event");
+      console.log("participants:stop-typing ");
       dispatch(setIsParticipantTyping(false));
+    });
+    socket.on("chat:toggle", (data) => {
+      dispatch(setRoomChatIsEnabled(data.isChatEnabled));
     });
 
     // Add event listeners for beforeunload and unload
@@ -243,6 +248,7 @@ const Room = () => {
       socket.off("participants:received-message");
       socket.off("participants:typing");
       socket.off("participants:stop-typing");
+      socket.off("chat:toggle");
 
       window.removeEventListener("beforeunload", handleUnload);
       window.removeEventListener("unload", handleUnload);
@@ -372,8 +378,8 @@ const Room = () => {
             </div>
 
             {/* More options button */}
-            <div role="button">
-              <BsThreeDotsVertical />
+            <div role="button" className="relative  overflow-visible">
+              <MenuDropdown />
             </div>
           </div>
 
@@ -392,6 +398,10 @@ const Room = () => {
               className={`text-2xl `}
               role="button"
               onClick={() => {
+                if (room?.isChatEnable == false) {
+                  toast.error("Chat is disabled by the admin.");
+                  return;
+                }
                 if (participants.length == 0) {
                   toast.error("No other users are connected.");
                   return;
